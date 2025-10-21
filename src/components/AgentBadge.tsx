@@ -1,14 +1,13 @@
-import React from "react";
-import { agentCatalog, defaultAgentId, type AgentId } from "@/mastra/agents/meta";
+import { agentCatalog, defaultAgentId, type AgentId } from "@/mastra/agents/meta"
 
 type Props = {
-  id?: AgentId;
-  className?: string;
-  showDescription?: boolean;
-};
+  id?: AgentId
+  className?: string
+  showDescription?: boolean
+}
 
 export function AgentBadge({ id = defaultAgentId, className, showDescription = false }: Props) {
-  const info = agentCatalog[id];
+  const info = agentCatalog[id]
 
   return (
     <div
@@ -36,9 +35,7 @@ export function AgentBadge({ id = defaultAgentId, className, showDescription = f
         }}
       />
       <span>{info.label} Agent</span>
-      {showDescription && (
-        <span style={{ fontWeight: 400, color: "#4b5563" }}>— {info.description}</span>
-      )}
+      {showDescription && <span style={{ fontWeight: 400, color: "#4b5563" }}>— {info.description}</span>}
     </div>
-  );
+  )
 }
