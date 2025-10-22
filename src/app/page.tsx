@@ -433,30 +433,74 @@ function YourMainContent({
               {/* Character Selection */}
               {setupStage === "character-selection" && (
                 <div className="animate-fade-in">
-                  <p className="font-semibold text-slate-900 mb-2">
-                    Q. Select from the below characters or create your own
-                  </p>
-                  <p className="text-sm text-slate-600 mb-4">
-                    (Select {targetCharacterCount} character(s) - {state.characters?.length ?? 0} selected)
-                  </p>
-                  <div className="space-y-2">
-                    {characterOptions.map((char, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => {
-                          const newCharacters = [...(state.characters || []), char]
-                          setState({ ...state, characters: newCharacters })
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <p className="font-semibold text-slate-900 mb-1">
+                        Q. Select from the below characters or create your own
+                      </p>
+                      <p className="text-sm text-slate-600">
+                        (Select {targetCharacterCount} character(s) - {state.characters?.length ?? 0} selected)
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setState({ ...state, characters: [] })
+                        setSetupStage("character-count")
+                      }}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-medium rounded-lg transition-all"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      Back
+                    </button>
+                  </div>
 
-                          if (newCharacters.length >= targetCharacterCount) {
-                            setSetupStage("world-note-count")
-                          }
-                        }}
-                        disabled={(state.characters?.length ?? 0) >= targetCharacterCount}
-                        className="w-full px-4 py-3 bg-gradient-to-br from-rose-100 to-pink-100 hover:from-rose-200 hover:to-pink-200 disabled:from-slate-100 disabled:to-slate-100 disabled:cursor-not-allowed text-slate-900 font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200 text-left"
-                      >
-                        {char}
-                      </button>
-                    ))}
+                  {state.characters && state.characters.length > 0 && (
+                    <div className="mb-3 p-3 bg-rose-50 border border-rose-200 rounded-xl">
+                      <p className="text-xs font-semibold text-rose-900 mb-2">Selected:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {state.characters.map((char, idx) => (
+                          <span
+                            key={idx}
+                            className="px-2 py-1 bg-rose-200 text-rose-900 text-xs font-medium rounded-lg"
+                          >
+                            {char}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-2">
+                    {characterOptions.map((char, idx) => {
+                      const isSelected = state.characters?.includes(char)
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            if (isSelected) {
+                              // Deselect
+                              setState({ ...state, characters: state.characters?.filter((c) => c !== char) })
+                            } else {
+                              // Select
+                              const newCharacters = [...(state.characters || []), char]
+                              setState({ ...state, characters: newCharacters })
+
+                              if (newCharacters.length >= targetCharacterCount) {
+                                setTimeout(() => setSetupStage("world-note-count"), 300)
+                              }
+                            }
+                          }}
+                          disabled={!isSelected && (state.characters?.length ?? 0) >= targetCharacterCount}
+                          className={`px-3 py-2 font-medium rounded-lg shadow-sm transition-all duration-200 text-left text-sm ${
+                            isSelected
+                              ? "bg-gradient-to-br from-rose-500 to-pink-500 text-white shadow-md"
+                              : "bg-gradient-to-br from-rose-100 to-pink-100 hover:from-rose-200 hover:to-pink-200 text-slate-900 disabled:from-slate-100 disabled:to-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                          }`}
+                        >
+                          {char}
+                        </button>
+                      )
+                    })}
                     <button
                       onClick={() => {
                         const customChar = prompt("Enter your character name:")
@@ -465,12 +509,12 @@ function YourMainContent({
                           setState({ ...state, characters: newCharacters })
 
                           if (newCharacters.length >= targetCharacterCount) {
-                            setSetupStage("world-note-count")
+                            setTimeout(() => setSetupStage("world-note-count"), 300)
                           }
                         }
                       }}
                       disabled={(state.characters?.length ?? 0) >= targetCharacterCount}
-                      className="w-full px-4 py-3 bg-gradient-to-br from-slate-100 to-slate-200 hover:from-slate-200 hover:to-slate-300 disabled:from-slate-50 disabled:to-slate-50 disabled:cursor-not-allowed text-slate-900 font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border-2 border-dashed border-slate-400"
+                      className="col-span-2 px-3 py-2 bg-gradient-to-br from-slate-100 to-slate-200 hover:from-slate-200 hover:to-slate-300 disabled:from-slate-50 disabled:to-slate-50 disabled:cursor-not-allowed disabled:opacity-50 text-slate-900 font-medium rounded-lg shadow-sm transition-all duration-200 border-2 border-dashed border-slate-400 text-sm"
                     >
                       Name your character
                     </button>
@@ -502,30 +546,74 @@ function YourMainContent({
               {/* World Note Selection */}
               {setupStage === "world-note-selection" && (
                 <div className="animate-fade-in">
-                  <p className="font-semibold text-slate-900 mb-2">
-                    Q. Select from the below world notes or create your own
-                  </p>
-                  <p className="text-sm text-slate-600 mb-4">
-                    (Select {targetWorldNoteCount} world note(s) - {state.worldNotes?.length ?? 0} selected)
-                  </p>
-                  <div className="space-y-2">
-                    {worldNoteOptions.map((note, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => {
-                          const newWorldNotes = [...(state.worldNotes || []), note]
-                          setState({ ...state, worldNotes: newWorldNotes })
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <p className="font-semibold text-slate-900 mb-1">
+                        Q. Select from the below world notes or create your own
+                      </p>
+                      <p className="text-sm text-slate-600">
+                        (Select {targetWorldNoteCount} world note(s) - {state.worldNotes?.length ?? 0} selected)
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setState({ ...state, worldNotes: [] })
+                        setSetupStage("world-note-count")
+                      }}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-medium rounded-lg transition-all"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      Back
+                    </button>
+                  </div>
 
-                          if (newWorldNotes.length >= targetWorldNoteCount) {
-                            setSetupStage("plot-beat-count")
-                          }
-                        }}
-                        disabled={(state.worldNotes?.length ?? 0) >= targetWorldNoteCount}
-                        className="w-full px-4 py-3 bg-gradient-to-br from-emerald-100 to-teal-100 hover:from-emerald-200 hover:to-teal-200 disabled:from-slate-100 disabled:to-slate-100 disabled:cursor-not-allowed text-slate-900 font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200 text-left"
-                      >
-                        {note}
-                      </button>
-                    ))}
+                  {state.worldNotes && state.worldNotes.length > 0 && (
+                    <div className="mb-3 p-3 bg-emerald-50 border border-emerald-200 rounded-xl">
+                      <p className="text-xs font-semibold text-emerald-900 mb-2">Selected:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {state.worldNotes.map((note, idx) => (
+                          <span
+                            key={idx}
+                            className="px-2 py-1 bg-emerald-200 text-emerald-900 text-xs font-medium rounded-lg"
+                          >
+                            {note}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-2">
+                    {worldNoteOptions.map((note, idx) => {
+                      const isSelected = state.worldNotes?.includes(note)
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            if (isSelected) {
+                              // Deselect
+                              setState({ ...state, worldNotes: state.worldNotes?.filter((n) => n !== note) })
+                            } else {
+                              // Select
+                              const newWorldNotes = [...(state.worldNotes || []), note]
+                              setState({ ...state, worldNotes: newWorldNotes })
+
+                              if (newWorldNotes.length >= targetWorldNoteCount) {
+                                setTimeout(() => setSetupStage("plot-beat-count"), 300)
+                              }
+                            }
+                          }}
+                          disabled={!isSelected && (state.worldNotes?.length ?? 0) >= targetWorldNoteCount}
+                          className={`px-3 py-2 font-medium rounded-lg shadow-sm transition-all duration-200 text-left text-sm ${
+                            isSelected
+                              ? "bg-gradient-to-br from-emerald-500 to-teal-500 text-white shadow-md"
+                              : "bg-gradient-to-br from-emerald-100 to-teal-100 hover:from-emerald-200 hover:to-teal-200 text-slate-900 disabled:from-slate-100 disabled:to-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                          }`}
+                        >
+                          {note}
+                        </button>
+                      )
+                    })}
                     <button
                       onClick={() => {
                         const customNote = prompt("Enter your world note:")
@@ -534,12 +622,12 @@ function YourMainContent({
                           setState({ ...state, worldNotes: newWorldNotes })
 
                           if (newWorldNotes.length >= targetWorldNoteCount) {
-                            setSetupStage("plot-beat-count")
+                            setTimeout(() => setSetupStage("plot-beat-count"), 300)
                           }
                         }
                       }}
                       disabled={(state.worldNotes?.length ?? 0) >= targetWorldNoteCount}
-                      className="w-full px-4 py-3 bg-gradient-to-br from-slate-100 to-slate-200 hover:from-slate-200 hover:to-slate-300 disabled:from-slate-50 disabled:to-slate-50 disabled:cursor-not-allowed text-slate-900 font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border-2 border-dashed border-slate-400"
+                      className="col-span-2 px-3 py-2 bg-gradient-to-br from-slate-100 to-slate-200 hover:from-slate-200 hover:to-slate-300 disabled:from-slate-50 disabled:to-slate-50 disabled:cursor-not-allowed disabled:opacity-50 text-slate-900 font-medium rounded-lg shadow-sm transition-all duration-200 border-2 border-dashed border-slate-400 text-sm"
                     >
                       Create your own world note
                     </button>
@@ -571,30 +659,74 @@ function YourMainContent({
               {/* Plot Beat Selection */}
               {setupStage === "plot-beat-selection" && (
                 <div className="animate-fade-in">
-                  <p className="font-semibold text-slate-900 mb-2">
-                    Q. Select from the below plot beats or create your own
-                  </p>
-                  <p className="text-sm text-slate-600 mb-4">
-                    (Select {targetPlotBeatCount} plot beat(s) - {state.plotBeats?.length ?? 0} selected)
-                  </p>
-                  <div className="space-y-2">
-                    {plotBeatOptions.map((beat, idx) => (
-                      <button
-                        key={idx}
-                        onClick={() => {
-                          const newPlotBeats = [...(state.plotBeats || []), beat]
-                          setState({ ...state, plotBeats: newPlotBeats })
+                  <div className="flex items-center justify-between mb-3">
+                    <div>
+                      <p className="font-semibold text-slate-900 mb-1">
+                        Q. Select from the below plot beats or create your own
+                      </p>
+                      <p className="text-sm text-slate-600">
+                        (Select {targetPlotBeatCount} plot beat(s) - {state.plotBeats?.length ?? 0} selected)
+                      </p>
+                    </div>
+                    <button
+                      onClick={() => {
+                        setState({ ...state, plotBeats: [] })
+                        setSetupStage("plot-beat-count")
+                      }}
+                      className="flex items-center gap-1 px-3 py-1.5 bg-slate-200 hover:bg-slate-300 text-slate-700 text-sm font-medium rounded-lg transition-all"
+                    >
+                      <ArrowLeft className="w-4 h-4" />
+                      Back
+                    </button>
+                  </div>
 
-                          if (newPlotBeats.length >= targetPlotBeatCount) {
-                            setSetupStage("complete")
-                          }
-                        }}
-                        disabled={(state.plotBeats?.length ?? 0) >= targetPlotBeatCount}
-                        className="w-full px-4 py-3 bg-gradient-to-br from-amber-100 to-orange-100 hover:from-amber-200 hover:to-orange-200 disabled:from-slate-100 disabled:to-slate-100 disabled:cursor-not-allowed text-slate-900 font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200 text-left"
-                      >
-                        {beat}
-                      </button>
-                    ))}
+                  {state.plotBeats && state.plotBeats.length > 0 && (
+                    <div className="mb-3 p-3 bg-amber-50 border border-amber-200 rounded-xl">
+                      <p className="text-xs font-semibold text-amber-900 mb-2">Selected:</p>
+                      <div className="flex flex-wrap gap-2">
+                        {state.plotBeats.map((beat, idx) => (
+                          <span
+                            key={idx}
+                            className="px-2 py-1 bg-amber-200 text-amber-900 text-xs font-medium rounded-lg"
+                          >
+                            {beat}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="grid grid-cols-2 gap-2">
+                    {plotBeatOptions.map((beat, idx) => {
+                      const isSelected = state.plotBeats?.includes(beat)
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            if (isSelected) {
+                              // Deselect
+                              setState({ ...state, plotBeats: state.plotBeats?.filter((b) => b !== beat) })
+                            } else {
+                              // Select
+                              const newPlotBeats = [...(state.plotBeats || []), beat]
+                              setState({ ...state, plotBeats: newPlotBeats })
+
+                              if (newPlotBeats.length >= targetPlotBeatCount) {
+                                setTimeout(() => setSetupStage("complete"), 300)
+                              }
+                            }
+                          }}
+                          disabled={!isSelected && (state.plotBeats?.length ?? 0) >= targetPlotBeatCount}
+                          className={`px-3 py-2 font-medium rounded-lg shadow-sm transition-all duration-200 text-left text-sm ${
+                            isSelected
+                              ? "bg-gradient-to-br from-amber-500 to-orange-500 text-white shadow-md"
+                              : "bg-gradient-to-br from-amber-100 to-orange-100 hover:from-amber-200 hover:to-orange-200 text-slate-900 disabled:from-slate-100 disabled:to-slate-100 disabled:cursor-not-allowed disabled:opacity-50"
+                          }`}
+                        >
+                          {beat}
+                        </button>
+                      )
+                    })}
                     <button
                       onClick={() => {
                         const customBeat = prompt("Enter your plot beat:")
@@ -603,12 +735,12 @@ function YourMainContent({
                           setState({ ...state, plotBeats: newPlotBeats })
 
                           if (newPlotBeats.length >= targetPlotBeatCount) {
-                            setSetupStage("complete")
+                            setTimeout(() => setSetupStage("complete"), 300)
                           }
                         }
                       }}
                       disabled={(state.plotBeats?.length ?? 0) >= targetPlotBeatCount}
-                      className="w-full px-4 py-3 bg-gradient-to-br from-slate-100 to-slate-200 hover:from-slate-200 hover:to-slate-300 disabled:from-slate-50 disabled:to-slate-50 disabled:cursor-not-allowed text-slate-900 font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border-2 border-dashed border-slate-400"
+                      className="col-span-2 px-3 py-2 bg-gradient-to-br from-slate-100 to-slate-200 hover:from-slate-200 hover:to-slate-300 disabled:from-slate-50 disabled:to-slate-50 disabled:cursor-not-allowed disabled:opacity-50 text-slate-900 font-medium rounded-lg shadow-sm transition-all duration-200 border-2 border-dashed border-slate-400 text-sm"
                     >
                       Create your own plot beat
                     </button>
