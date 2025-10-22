@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Nosana Mastra Agent Kit",
+  title: "Storyforge",
   description: "An example of using CopilotKit with Mastra agents.",
 };
 
