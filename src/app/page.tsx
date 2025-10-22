@@ -7,7 +7,7 @@ import type { StoryState as StoryStateSchema } from "@/mastra/agents/state"
 import type { z } from "zod"
 import { agentCatalog, defaultAgentId } from "@/mastra/agents/meta"
 import { TEMPLATES, getTemplateById, type TemplateId } from "@/mastra/agents/templates"
-import { Sparkles, User, Globe, Zap, X, BookOpen, Wand2 } from "lucide-react"
+import { Sparkles, User, Globe, Zap, X, BookOpen, Wand2, ArrowLeft } from "lucide-react"
 
 type StoryState = z.infer<typeof StoryStateSchema>
 
@@ -120,6 +120,24 @@ function YourMainContent({
     })
   }
 
+  const resetStory = () => {
+    setSelectedTemplate(null)
+    setState({
+      characters: [],
+      worldNotes: [],
+      plotBeats: [],
+      stylePreset: "neutral",
+      toneHints: [],
+      branches: [],
+      lastPlan: "",
+      userProfile: { name: "", preferences: [] },
+      narrativeSettings: { pov: "third", tense: "past", pacing: "balanced", readingLevel: "standard" },
+      constraints: { avoidTopics: [], contentWarnings: [] },
+      canonFacts: [],
+      themes: [],
+    })
+  }
+
   const showPicker = useMemo(() => {
     const empty =
       (state.characters?.length ?? 0) === 0 &&
@@ -153,21 +171,36 @@ function YourMainContent({
       <div className="relative z-10 max-w-7xl mx-auto">
         {/* Header Section */}
         <header className="mb-8 md:mb-12 animate-fade-in">
-          <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl sm:rounded-2xl blur-xl opacity-30 animate-pulse-slow" />
-              <div className="relative bg-gradient-to-br from-indigo-600 to-purple-600 p-2 sm:p-3 md:p-4 rounded-xl sm:rounded-2xl shadow-lg">
-                <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-white" />
+          <div className="flex items-center justify-between gap-3 sm:gap-4 mb-4 sm:mb-6">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl sm:rounded-2xl blur-xl opacity-30 animate-pulse-slow" />
+                <div className="relative bg-gradient-to-br from-indigo-600 to-purple-600 p-2 sm:p-3 md:p-4 rounded-xl sm:rounded-2xl shadow-lg">
+                  <BookOpen className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-white" />
+                </div>
+              </div>
+              <div>
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-slate-900 tracking-tight">
+                  Story Forge
+                </h1>
+                <p className="text-slate-600 text-sm sm:text-base md:text-lg mt-0.5 sm:mt-1 font-light">
+                  Craft narratives with AI-powered precision
+                </p>
               </div>
             </div>
-            <div>
-              <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-serif font-bold text-slate-900 tracking-tight">
-                Story Forge
-              </h1>
-              <p className="text-slate-600 text-sm sm:text-base md:text-lg mt-0.5 sm:mt-1 font-light">
-                Craft narratives with AI-powered precision
-              </p>
-            </div>
+
+            {!showPicker && (
+              <button
+                onClick={resetStory}
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 sm:py-2.5 bg-white/80 backdrop-blur-sm border border-slate-300 hover:border-indigo-400 rounded-xl sm:rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 group touch-manipulation"
+                aria-label="Back to templates"
+              >
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600 group-hover:text-indigo-600 transition-colors" />
+                <span className="text-sm sm:text-base font-medium text-slate-700 group-hover:text-indigo-700 transition-colors hidden sm:inline">
+                  Back to Templates
+                </span>
+              </button>
+            )}
           </div>
 
           {/* Agent Badge */}
