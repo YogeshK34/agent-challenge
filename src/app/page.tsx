@@ -1,6 +1,6 @@
 "use client"
 
-import { useCoAgent, useCopilotAction } from "@copilotkit/react-core"
+import { useCoAgent, useCopilotAction, useCopilotReadable } from "@copilotkit/react-core"
 import { type CopilotKitCSSProperties, CopilotSidebar } from "@copilotkit/react-ui"
 import { useMemo, useState, useEffect } from "react"
 import type { StoryState as StoryStateSchema } from "@/mastra/agents/state"
@@ -11,37 +11,15 @@ import { Sparkles, User, Globe, Zap, X, BookOpen, Wand2, ArrowLeft } from "lucid
 
 type StoryState = z.infer<typeof StoryStateSchema>
 
-// Helper function for genre-specific prompts
-function getGenreSpecificPrompts(templateId: TemplateId): string {
-  const prompts: Record<TemplateId, string> = {
-    whimsical: `- "Add a whimsical character who collects impossible things"
-- "Describe a magical market that only appears at dawn"
-- "What happens when the talking compass gets lost?"`,
-    thriller: `- "Introduce a suspicious character with a hidden agenda"
-- "Add a plot twist that changes everything"
-- "What dark secret is the city hiding?"`,
-    "epic-lore": `- "Reveal an ancient prophecy about the bell tower"
-- "Add a legendary artifact with a terrible cost"
-- "What empire fell here, and why?"`,
-    romance: `- "Create a moment of unexpected connection"
-- "Add a complication that tests their feelings"
-- "What letter was never meant to be read?"`,
-    "sci-fi": `- "Introduce an alien technology with ethical implications"
-- "What does the bio-signal really mean?"
-- "Add a scientific discovery that changes everything"`,
-    fantasy: `- "Reveal the true power of the glass map"
-- "Add a magical creature bound by ancient rules"
-- "What destiny is Ari trying to escape?"`,
-    horror: `- "Describe what Helena sees in the mirror"
-- "Add a supernatural entity that feeds on fear"
-- "What happened in room 237?"`,
-    cyberpunk: `- "Introduce a corpo conspiracy that goes to the top"
-- "What memories did Raze lose, and why?"
-- "Add a black market deal that goes sideways"`,
-  }
-
-  return prompts[templateId] || "- Continue the story\n- Add a new character\n- Develop the world"
-}
+type SetupStage =
+  | "intro"
+  | "character-count"
+  | "character-selection"
+  | "world-note-count"
+  | "world-note-selection"
+  | "plot-beat-count"
+  | "plot-beat-selection"
+  | "complete"
 
 const TEMPLATE_WALLPAPERS: Record<TemplateId, string> = {
   whimsical: "/whimsical.png",
@@ -61,7 +39,6 @@ export default function CopilotKitPage() {
   const [resetStoryCallback, setResetStoryCallback] = useState<(() => void) | null>(null)
 
   const currentAgent = agentCatalog[defaultAgentId]
-
   const currentWallpaper = selectedTemplate ? TEMPLATE_WALLPAPERS[selectedTemplate] : null
 
   const dynamicLabels = useMemo(() => {
@@ -81,24 +58,18 @@ export default function CopilotKitPage() {
       }
     }
 
-    // Build template-specific context
-    const styleContext = template.patch.stylePreset ? `Style: ${template.patch.stylePreset}` : ""
-    const toneContext = template.patch.toneHints?.length ? `Tone: ${template.patch.toneHints.join(", ")}` : ""
-    const themesContext = template.patch.themes?.length ? `Themes: ${template.patch.themes.join(", ")}` : ""
-
     const initialMessage = `${template.emoji} **${template.label} Story Mode**
 
-${styleContext}
-${toneContext}
-${themesContext}
+Welcome! Let's build your story together.
 
-**Try these ${template.label.toLowerCase()} prompts:**
-${getGenreSpecificPrompts(selectedTemplate)}
+**You need 3 things:**
+1. Characters - The people in your story
+2. World Notes - The setting and environment  
+3. Plot Beats - Key story moments
 
-You can also:
-- Add more characters fitting this genre
-- Expand the world with ${template.label.toLowerCase()} elements
-- Continue the plot with genre-appropriate twists`
+👈 **Use the selection panel on the left to make your choices!**
+
+Once you've completed all selections, I'll show you story prompts to get started.`
 
     return {
       title: `${template.emoji} ${template.label} Storyteller`,
@@ -172,7 +143,7 @@ You can also:
       </header>
 
       {/* Main container with rounded corners and padding (blue container from wireframe) */}
-      <div className="max-w-[1800px] mx-auto h-[calc(100vh-8rem)] md:h-[calc(100vh-10rem)] lg:h-[calc(100vh-12rem)] flex flex-col gap-4 md:gap-6">
+      <div className="max-w-[1800px] mx-auto h-[calc(100vh-8rem)] md:h-[calc(100vh-10rem)] lg:h-[calc(100vh-12rem)] flex flex-col gap-4 md:gap-6 min-h-0">
         {/* Two-column content area (templates on left, chat on right) */}
         <div className="flex-1 flex flex-col lg:flex-row gap-4 md:gap-6 min-h-0">
           {/* Main content area (templates/story board) - pink section from wireframe */}
@@ -252,6 +223,21 @@ function YourMainContent({
     },
   })
 
+  const [setupStage, setSetupStage] = useState<SetupStage>("intro")
+  const [targetCharacterCount, setTargetCharacterCount] = useState(0)
+  const [targetWorldNoteCount, setTargetWorldNoteCount] = useState(0)
+  const [targetPlotBeatCount, setTargetPlotBeatCount] = useState(0)
+
+  useEffect(() => {
+    if (selectedTemplate && setupStage === "intro") {
+      // Automatically move to character count selection after a brief delay
+      const timer = setTimeout(() => {
+        setSetupStage("character-count")
+      }, 500)
+      return () => clearTimeout(timer)
+    }
+  }, [selectedTemplate, setupStage])
+
   useEffect(() => {
     setStoryStats({
       characters: state.characters?.length ?? 0,
@@ -259,6 +245,18 @@ function YourMainContent({
       plotBeats: state.plotBeats?.length ?? 0,
     })
   }, [state.characters, state.worldNotes, state.plotBeats, setStoryStats])
+
+  useCopilotReadable({
+    description: "Current story state and setup progress",
+    value: {
+      setupStage,
+      selectedTemplate,
+      setupComplete: setupStage === "complete",
+      characters: state.characters,
+      worldNotes: state.worldNotes,
+      plotBeats: state.plotBeats,
+    },
+  })
 
   useCopilotAction({
     name: "setThemeColor",
@@ -268,6 +266,61 @@ function YourMainContent({
     handler({ themeColor }) {
       setThemeColor(themeColor)
     },
+  })
+
+  useCopilotAction({
+    name: "askCharacterCount",
+    description: "Present options for how many characters the user wants to add",
+    parameters: [],
+    handler() {
+      setSetupStage("character-count")
+    },
+  })
+
+  useCopilotAction({
+    name: "presentCharacterOptions",
+    description: "Show character options from the template for user to select",
+    parameters: [],
+    handler() {},
+  })
+
+  useCopilotAction({
+    name: "askWorldNoteCount",
+    description: "Present options for how many world notes the user wants to add",
+    parameters: [],
+    handler() {
+      setSetupStage("world-note-count")
+    },
+  })
+
+  useCopilotAction({
+    name: "presentWorldNoteOptions",
+    description: "Show world note options from the template for user to select",
+    parameters: [],
+    handler() {},
+  })
+
+  useCopilotAction({
+    name: "askPlotBeatCount",
+    description: "Present options for how many plot beats the user wants to add",
+    parameters: [],
+    handler() {
+      setSetupStage("plot-beat-count")
+    },
+  })
+
+  useCopilotAction({
+    name: "presentPlotBeatOptions",
+    description: "Show plot beat options from the template for user to select",
+    parameters: [],
+    handler() {},
+  })
+
+  useCopilotAction({
+    name: "showStoryPrompts",
+    description: "Show story prompts after all selections are complete",
+    parameters: [],
+    handler() {},
   })
 
   useCopilotAction({
@@ -288,43 +341,31 @@ function YourMainContent({
       { name: "canonFacts", required: false },
       { name: "themes", required: false },
     ],
-    // render: ({ args }) => {
-    //   const patch = (args as any)?.memory ?? args
-    //   return (
-    //     <div style={{ backgroundColor: themeColor }} className="rounded-2xl max-w-md w-full text-white p-4">
-    //       <p className="font-semibold mb-2">Memory updated</p>
-    //       <details className="mt-2">
-    //         <summary className="cursor-pointer text-white/90 hover:text-white transition-colors">See updates</summary>
-    //         <pre
-    //           style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
-    //           className="overflow-x-auto text-sm bg-white/20 p-4 rounded-lg mt-2"
-    //         >
-    //           {JSON.stringify(patch, null, 2)}
-    //         </pre>
-    //       </details>
-    //     </div>
-    //   )
-    // },
   })
 
   const applyTemplate = (id: TemplateId) => {
     const t = getTemplateById(id)
     if (!t) return
     setSelectedTemplate(id)
+    setSetupStage("intro")
     setState({
       ...state,
-      ...(t.patch.characters ? { characters: t.patch.characters } : {}),
-      ...(t.patch.worldNotes ? { worldNotes: t.patch.worldNotes } : {}),
-      ...(t.patch.plotBeats ? { plotBeats: t.patch.plotBeats } : {}),
       ...(t.patch.stylePreset ? { stylePreset: t.patch.stylePreset } : {}),
       ...(t.patch.toneHints ? { toneHints: t.patch.toneHints } : {}),
       ...(t.patch.themes ? { themes: t.patch.themes } : {}),
       ...(t.patch.canonFacts ? { canonFacts: t.patch.canonFacts } : {}),
+      characters: [],
+      worldNotes: [],
+      plotBeats: [],
     })
   }
 
   const resetStory = () => {
     setSelectedTemplate(null)
+    setSetupStage("intro")
+    setTargetCharacterCount(0)
+    setTargetWorldNoteCount(0)
+    setTargetPlotBeatCount(0)
     setState({
       characters: [],
       worldNotes: [],
@@ -347,19 +388,262 @@ function YourMainContent({
   }, [setResetStoryCallback])
 
   const showPicker = useMemo(() => {
-    const empty =
-      (state.characters?.length ?? 0) === 0 &&
-      (state.worldNotes?.length ?? 0) === 0 &&
-      (state.plotBeats?.length ?? 0) === 0
-    return empty && !selectedTemplate
-  }, [state, selectedTemplate])
+    return !selectedTemplate
+  }, [selectedTemplate])
+
+  const template = selectedTemplate ? getTemplateById(selectedTemplate) : null
+  const characterOptions = template?.patch.characters || []
+  const worldNoteOptions = template?.patch.worldNotes || []
+  const plotBeatOptions = template?.patch.plotBeats || []
 
   return (
-    <>
+    <div className="space-y-6">
       {showPicker ? (
         <TemplatePicker onSelect={applyTemplate} />
       ) : (
-        <div className="space-y-6">
+        <>
+          {setupStage !== "complete" && (
+            <div className="mb-6 bg-gradient-to-br from-indigo-50 to-purple-50 rounded-3xl p-6 border-2 border-indigo-200 shadow-lg">
+              <div className="mb-4">
+                <h3 className="text-xl font-serif font-bold text-slate-900 mb-2">Story Setup</h3>
+                <p className="text-sm text-slate-600">Complete the following steps to build your story foundation</p>
+              </div>
+
+              {/* Character Count Selection */}
+              {setupStage === "character-count" && (
+                <div className="animate-fade-in">
+                  <p className="font-semibold text-slate-900 mb-4">Q. Select the number of characters:</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {[1, 2, 3, 4].map((count) => (
+                      <button
+                        key={count}
+                        onClick={() => {
+                          setTargetCharacterCount(count)
+                          setSetupStage("character-selection")
+                        }}
+                        className="px-6 py-4 bg-gradient-to-br from-rose-500 to-pink-500 hover:from-rose-600 hover:to-pink-600 text-white font-bold text-lg rounded-xl shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
+                      >
+                        {count}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Character Selection */}
+              {setupStage === "character-selection" && (
+                <div className="animate-fade-in">
+                  <p className="font-semibold text-slate-900 mb-2">
+                    Q. Select from the below characters or create your own
+                  </p>
+                  <p className="text-sm text-slate-600 mb-4">
+                    (Select {targetCharacterCount} character(s) - {state.characters?.length ?? 0} selected)
+                  </p>
+                  <div className="space-y-2">
+                    {characterOptions.map((char, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          const newCharacters = [...(state.characters || []), char]
+                          setState({ ...state, characters: newCharacters })
+
+                          if (newCharacters.length >= targetCharacterCount) {
+                            setSetupStage("world-note-count")
+                          }
+                        }}
+                        disabled={(state.characters?.length ?? 0) >= targetCharacterCount}
+                        className="w-full px-4 py-3 bg-gradient-to-br from-rose-100 to-pink-100 hover:from-rose-200 hover:to-pink-200 disabled:from-slate-100 disabled:to-slate-100 disabled:cursor-not-allowed text-slate-900 font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200 text-left"
+                      >
+                        {char}
+                      </button>
+                    ))}
+                    <button
+                      onClick={() => {
+                        const customChar = prompt("Enter your character name:")
+                        if (customChar) {
+                          const newCharacters = [...(state.characters || []), customChar]
+                          setState({ ...state, characters: newCharacters })
+
+                          if (newCharacters.length >= targetCharacterCount) {
+                            setSetupStage("world-note-count")
+                          }
+                        }
+                      }}
+                      disabled={(state.characters?.length ?? 0) >= targetCharacterCount}
+                      className="w-full px-4 py-3 bg-gradient-to-br from-slate-100 to-slate-200 hover:from-slate-200 hover:to-slate-300 disabled:from-slate-50 disabled:to-slate-50 disabled:cursor-not-allowed text-slate-900 font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border-2 border-dashed border-slate-400"
+                    >
+                      Name your character
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* World Note Count Selection */}
+              {setupStage === "world-note-count" && (
+                <div className="animate-fade-in">
+                  <p className="font-semibold text-slate-900 mb-4">Q. Select the number of world notes:</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {[1, 2, 3, 4].map((count) => (
+                      <button
+                        key={count}
+                        onClick={() => {
+                          setTargetWorldNoteCount(count)
+                          setSetupStage("world-note-selection")
+                        }}
+                        className="px-6 py-4 bg-gradient-to-br from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 text-white font-bold text-lg rounded-xl shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
+                      >
+                        {count}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* World Note Selection */}
+              {setupStage === "world-note-selection" && (
+                <div className="animate-fade-in">
+                  <p className="font-semibold text-slate-900 mb-2">
+                    Q. Select from the below world notes or create your own
+                  </p>
+                  <p className="text-sm text-slate-600 mb-4">
+                    (Select {targetWorldNoteCount} world note(s) - {state.worldNotes?.length ?? 0} selected)
+                  </p>
+                  <div className="space-y-2">
+                    {worldNoteOptions.map((note, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          const newWorldNotes = [...(state.worldNotes || []), note]
+                          setState({ ...state, worldNotes: newWorldNotes })
+
+                          if (newWorldNotes.length >= targetWorldNoteCount) {
+                            setSetupStage("plot-beat-count")
+                          }
+                        }}
+                        disabled={(state.worldNotes?.length ?? 0) >= targetWorldNoteCount}
+                        className="w-full px-4 py-3 bg-gradient-to-br from-emerald-100 to-teal-100 hover:from-emerald-200 hover:to-teal-200 disabled:from-slate-100 disabled:to-slate-100 disabled:cursor-not-allowed text-slate-900 font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200 text-left"
+                      >
+                        {note}
+                      </button>
+                    ))}
+                    <button
+                      onClick={() => {
+                        const customNote = prompt("Enter your world note:")
+                        if (customNote) {
+                          const newWorldNotes = [...(state.worldNotes || []), customNote]
+                          setState({ ...state, worldNotes: newWorldNotes })
+
+                          if (newWorldNotes.length >= targetWorldNoteCount) {
+                            setSetupStage("plot-beat-count")
+                          }
+                        }
+                      }}
+                      disabled={(state.worldNotes?.length ?? 0) >= targetWorldNoteCount}
+                      className="w-full px-4 py-3 bg-gradient-to-br from-slate-100 to-slate-200 hover:from-slate-200 hover:to-slate-300 disabled:from-slate-50 disabled:to-slate-50 disabled:cursor-not-allowed text-slate-900 font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border-2 border-dashed border-slate-400"
+                    >
+                      Create your own world note
+                    </button>
+                  </div>
+                </div>
+              )}
+
+              {/* Plot Beat Count Selection */}
+              {setupStage === "plot-beat-count" && (
+                <div className="animate-fade-in">
+                  <p className="font-semibold text-slate-900 mb-4">Q. Select the number of plot beats:</p>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    {[1, 2, 3, 4].map((count) => (
+                      <button
+                        key={count}
+                        onClick={() => {
+                          setTargetPlotBeatCount(count)
+                          setSetupStage("plot-beat-selection")
+                        }}
+                        className="px-6 py-4 bg-gradient-to-br from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-bold text-lg rounded-xl shadow-md hover:shadow-lg transition-all duration-200 hover:-translate-y-1"
+                      >
+                        {count}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Plot Beat Selection */}
+              {setupStage === "plot-beat-selection" && (
+                <div className="animate-fade-in">
+                  <p className="font-semibold text-slate-900 mb-2">
+                    Q. Select from the below plot beats or create your own
+                  </p>
+                  <p className="text-sm text-slate-600 mb-4">
+                    (Select {targetPlotBeatCount} plot beat(s) - {state.plotBeats?.length ?? 0} selected)
+                  </p>
+                  <div className="space-y-2">
+                    {plotBeatOptions.map((beat, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          const newPlotBeats = [...(state.plotBeats || []), beat]
+                          setState({ ...state, plotBeats: newPlotBeats })
+
+                          if (newPlotBeats.length >= targetPlotBeatCount) {
+                            setSetupStage("complete")
+                          }
+                        }}
+                        disabled={(state.plotBeats?.length ?? 0) >= targetPlotBeatCount}
+                        className="w-full px-4 py-3 bg-gradient-to-br from-amber-100 to-orange-100 hover:from-amber-200 hover:to-orange-200 disabled:from-slate-100 disabled:to-slate-100 disabled:cursor-not-allowed text-slate-900 font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200 text-left"
+                      >
+                        {beat}
+                      </button>
+                    ))}
+                    <button
+                      onClick={() => {
+                        const customBeat = prompt("Enter your plot beat:")
+                        if (customBeat) {
+                          const newPlotBeats = [...(state.plotBeats || []), customBeat]
+                          setState({ ...state, plotBeats: newPlotBeats })
+
+                          if (newPlotBeats.length >= targetPlotBeatCount) {
+                            setSetupStage("complete")
+                          }
+                        }
+                      }}
+                      disabled={(state.plotBeats?.length ?? 0) >= targetPlotBeatCount}
+                      className="w-full px-4 py-3 bg-gradient-to-br from-slate-100 to-slate-200 hover:from-slate-200 hover:to-slate-300 disabled:from-slate-50 disabled:to-slate-50 disabled:cursor-not-allowed text-slate-900 font-medium rounded-xl shadow-sm hover:shadow-md transition-all duration-200 border-2 border-dashed border-slate-400"
+                    >
+                      Create your own plot beat
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {setupStage === "complete" && template && (
+            <div className="mb-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-3xl p-6 border-2 border-green-200 shadow-lg animate-fade-in">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-8 h-8 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-white" />
+                </div>
+                <h3 className="text-xl font-serif font-bold text-slate-900">Setup Complete! 🎉</h3>
+              </div>
+              <p className="text-slate-700 mb-4">Your story foundation is ready. Try these prompts in the chat:</p>
+              <ul className="space-y-2 mb-4">
+                {template.examples?.plotBeats?.slice(0, 3).map((prompt: string, idx: number) => (
+                  <li key={idx} className="flex items-start gap-2 text-base text-slate-700">
+                    <span className="text-green-600 font-bold">•</span>
+                    <span>"{prompt}"</span>
+                  </li>
+                ))}
+              </ul>
+              <p className="text-sm text-slate-600">You can also:</p>
+              <ul className="text-sm text-slate-600 space-y-1 mt-1">
+                <li>• Add more characters fitting this genre</li>
+                <li>• Expand the world with {template.label.toLowerCase()} elements</li>
+                <li>• Continue the plot with genre-appropriate twists</li>
+              </ul>
+            </div>
+          )}
+
           {/* Main Content Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {/* Characters Section */}
@@ -396,7 +680,7 @@ function YourMainContent({
                   <div className="bg-white/50 backdrop-blur-sm border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center">
                     <User className="w-10 h-10 text-slate-400 mx-auto mb-2" />
                     <p className="text-xs sm:text-sm text-slate-500 italic">
-                      No characters yet. Ask the storyteller to add some.
+                      No characters yet. Select from the options in chat.
                     </p>
                   </div>
                 )}
@@ -437,7 +721,7 @@ function YourMainContent({
                   <div className="bg-white/50 backdrop-blur-sm border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center">
                     <Globe className="w-10 h-10 text-slate-400 mx-auto mb-2" />
                     <p className="text-xs sm:text-sm text-slate-500 italic">
-                      No world notes yet. Ask the storyteller to add some.
+                      No world notes yet. Select from the options in chat.
                     </p>
                   </div>
                 )}
@@ -481,16 +765,16 @@ function YourMainContent({
                   <div className="bg-white/50 backdrop-blur-sm border-2 border-dashed border-slate-300 rounded-2xl p-6 text-center">
                     <Zap className="w-10 h-10 text-slate-400 mx-auto mb-2" />
                     <p className="text-xs sm:text-sm text-slate-500 italic">
-                      No plot beats yet. Ask the storyteller to add some.
+                      No plot beats yet. Select from the options in chat.
                     </p>
                   </div>
                 )}
               </div>
             </section>
           </div>
-        </div>
+        </>
       )}
-    </>
+    </div>
   )
 }
 
@@ -561,8 +845,8 @@ function TemplatePicker({ onSelect }: { onSelect: (id: TemplateId) => void }) {
           <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900">Choose Your Genre</h2>
         </div>
         <p className="text-slate-600 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
-          Start with a curated template to pre-populate your story with characters, world notes, and an opening plot
-          beat.
+          Start with a curated template and interactively build your story by selecting characters, world notes, and
+          plot beats through the chat.
         </p>
       </div>
 
