@@ -5,6 +5,7 @@
 
 ## Welcome to the AI Agent Challenge
 
+
 Build and deploy intelligent AI agents using the **Mastra framework** on the **Nosana decentralized compute network**. Whether you're a beginner or an experienced developer, this challenge has something for everyone!
 
 ## 🎯 Challenge Overview
