@@ -4,6 +4,7 @@ export const AgentState = z.object({
   proverbs: z.array(z.string()).default([]),
 })
 
+// Agent outputs should be grounded in this state; avoid hallucinating details not present here.
 export const StoryState = z.object({
   characters: z.array(z.string()).default([]),
   worldNotes: z.array(z.string()).default([]),

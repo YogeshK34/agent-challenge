@@ -86,23 +86,24 @@ function YourMainContent({
       { name: "canonFacts", required: false },
       { name: "themes", required: false },
     ],
-    render: ({ args }) => {
-      const patch = (args as any)?.memory ?? args
-      return (
-        <div style={{ backgroundColor: themeColor }} className="rounded-2xl max-w-md w-full text-white p-4">
-          <p className="font-semibold mb-2">Memory updated</p>
-          <details className="mt-2">
-            <summary className="cursor-pointer text-white/90 hover:text-white transition-colors">See updates</summary>
-            <pre
-              style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
-              className="overflow-x-auto text-sm bg-white/20 p-4 rounded-lg mt-2"
-            >
-              {JSON.stringify(patch, null, 2)}
-            </pre>
-          </details>
-        </div>
-      )
-    },
+    // To hide the memory updates tab, comment out or remove the render property below:
+    // render: ({ args }) => {
+    //   const patch = (args as any)?.memory ?? args
+    //   return (
+    //     <div style={{ backgroundColor: themeColor }} className="rounded-2xl max-w-md w-full text-white p-4">
+    //       <p className="font-semibold mb-2">Memory updated</p>
+    //       <details className="mt-2">
+    //         <summary className="cursor-pointer text-white/90 hover:text-white transition-colors">See updates</summary>
+    //         <pre
+    //           style={{ whiteSpace: "pre-wrap", wordBreak: "break-word" }}
+    //           className="overflow-x-auto text-sm bg-white/20 p-4 rounded-lg mt-2"
+    //         >
+    //           {JSON.stringify(patch, null, 2)}
+    //         </pre>
+    //       </details>
+    //     </div>
+    //   )
+    // },
   })
 
   const applyTemplate = (id: TemplateId) => {

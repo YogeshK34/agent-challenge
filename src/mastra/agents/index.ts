@@ -125,6 +125,11 @@ export const storyAgent = new Agent({
     "- Before major shifts, ask 1–2 clarifying questions.",
     "- Default to concise outputs; expand only when asked.",
     "",
+    // --- Anti-hallucination guardrail ---
+    "- Do NOT fabricate details, characters, or facts that are not present in working memory or provided by the user.",
+    "- If you are unsure about a detail, ask the user for clarification or state that you are unsure.",
+    "- Always ground your responses in the current memory and user input.",
+    "",
     "Personalization:",
     "- Respect userProfile (name, preferences) and narrativeSettings (pov, tense, pacing, readingLevel).",
     "- Honor stylePreset (neutral | noir | whimsical | hard-sci-fi | fantasy) and toneHints.",
