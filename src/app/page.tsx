@@ -385,7 +385,7 @@ function YourMainContent({
 
   useEffect(() => {
     setResetStoryCallback(() => resetStory)
-  }, [resetStory, setResetStoryCallback])
+  }, [setResetStoryCallback])
 
   const showPicker = useMemo(() => {
     return !selectedTemplate
@@ -527,7 +527,7 @@ function YourMainContent({
                 <div className="animate-fade-in">
                   <p className="font-semibold text-slate-900 mb-4">Q. Select the number of world notes:</p>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {[1, 2, 3, 4].map((count) => (
+                    {[1, 2].map((count) => (
                       <button
                         key={count}
                         onClick={() => {
@@ -640,7 +640,7 @@ function YourMainContent({
                 <div className="animate-fade-in">
                   <p className="font-semibold text-slate-900 mb-4">Q. Select the number of plot beats:</p>
                   <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    {[1, 2, 3, 4].map((count) => (
+                    {[1, 2].map((count) => (
                       <button
                         key={count}
                         onClick={() => {
@@ -758,14 +758,28 @@ function YourMainContent({
                 </div>
                 <h3 className="text-xl font-serif font-bold text-slate-900">Setup Complete! 🎉</h3>
               </div>
-              <p className="text-slate-700 mb-4">Your story foundation is ready. Try these prompts in the chat:</p>
+              <p className="text-slate-700 mb-4">
+                Your story foundation is ready. Try these prompts in the chat to generate a complete story:
+              </p>
               <ul className="space-y-2 mb-4">
-                {template.examples?.plotBeats?.slice(0, 3).map((prompt: string, idx: number) => (
-                  <li key={idx} className="flex items-start gap-2 text-base text-slate-700">
-                    <span className="text-green-600 font-bold">•</span>
-                    <span>&quot;{prompt}&quot;</span>
-                  </li>
-                ))}
+                <li className="flex items-start gap-2 text-base text-slate-700">
+                  <span className="text-green-600 font-bold">•</span>
+                  <span>
+                    "Generate a complete {template.label.toLowerCase()} story using all my selected characters, world
+                    notes, and plot beats"
+                  </span>
+                </li>
+                <li className="flex items-start gap-2 text-base text-slate-700">
+                  <span className="text-green-600 font-bold">•</span>
+                  <span>"Write a full narrative that weaves together all the elements I've chosen"</span>
+                </li>
+                <li className="flex items-start gap-2 text-base text-slate-700">
+                  <span className="text-green-600 font-bold">•</span>
+                  <span>
+                    "Create a {template.label.toLowerCase()} story incorporating my characters in the world setting with
+                    the plot beats"
+                  </span>
+                </li>
               </ul>
               <p className="text-sm text-slate-600">You can also:</p>
               <ul className="text-sm text-slate-600 space-y-1 mt-1">
