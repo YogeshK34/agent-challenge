@@ -399,3 +399,41 @@ Do not export:
 - src/mastra/index.ts and src/mastra/mcp/* (server-only setup)
 
 These files let another AI safely redesign the UI without pulling server dependencies.
+
+## Persistent storage (DB)
+
+This project now uses a persistent database for both:
+- Mastra global storage (runs/ops)
+- Agent working memory (StoryState)
+
+Options:
+- Local file-backed SQLite (default, free)
+  - Set `MASTRA_DB_URL=file:./data/mastra.db` (default if unset)
+  - The container must be able to write to `./data`
+- Remote libSQL (e.g., Turso)
+  - Set:
+    - `MASTRA_DB_URL=libsql://<your-db-url>`
+    - `MASTRA_DB_AUTH_TOKEN=<your-auth-token>`
+
+Environment
+```env
+# Local (default)
+MASTRA_DB_URL=file:./data/mastra.db
+
+# Or remote libSQL (Turso)
+# MASTRA_DB_URL=libsql://your-db-url
+# MASTRA_DB_AUTH_TOKEN=your-token
+```
+
+Docker usage (local volume)
+```bash
+# Persist data on host so container restarts don't wipe memory
+docker run -p 3000:3000 \
+  -e MASTRA_DB_URL=file:/data/mastra.db \
+  -v $(pwd)/data:/data \
+  yourusername/agent-challenge:latest
+```
+
+Nosana notes
+- Ephemeral filesystems may reset between runs; prefer remote libSQL for stable demos.
+- Keep DB env vars in your Nosana job definition; no code changes required.

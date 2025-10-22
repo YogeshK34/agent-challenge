@@ -4,17 +4,18 @@ import { storyAgent } from "./agents";
 import { ConsoleLogger, LogLevel } from "@mastra/core/logger";
 import { server } from "./mcp";
 
-const LOG_LEVEL = process.env.LOG_LEVEL as LogLevel || "info";
+const LOG_LEVEL = (process.env.LOG_LEVEL as LogLevel) || "info";
 
 export const mastra = new Mastra({
   agents: {
     storyAgent,
   },
   mcpServers: {
-    server
+    server,
   },
   storage: new LibSQLStore({
-    url: ":memory:"
+    url: process.env.MASTRA_DB_URL || "file:./data/mastra.db",
+    authToken: process.env.MASTRA_DB_AUTH || process.env.MASTRA_DB_AUTH_TOKEN,
   }),
   logger: new ConsoleLogger({
     level: LOG_LEVEL,
