@@ -32,6 +32,7 @@ export default function CopilotKitPage() {
   )
 }
 
+
 function YourMainContent({
   themeColor,
   setThemeColor,
