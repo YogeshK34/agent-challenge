@@ -6,6 +6,8 @@ import { LibSQLStore } from "@mastra/libsql";
 import { z } from "zod";
 import { Memory } from "@mastra/memory";
 import { groq } from "@ai-sdk/groq";
+import { MEMORY_UPDATE_STRATEGY, DEBOUNCE_MS, debounce, identity } from '../../config/memory';
+import { shouldSendMemoryUiNotification } from '../../config/memory';
 
 export const StoryState = z.object({
   characters: z.array(z.string()).default([]),
@@ -119,5 +121,50 @@ export const storyAgent = new Agent({
   }),
 });
 
+// Basic implementation of memory persistence
+const persistMemoryUpdate = async (...args: any[]) => {
+  // TODO: Implement actual persistence logic
+  console.log('Memory update:', ...args);
+};
+
+// Wrap the low-level persist function according to configured strategy:
+const _persistMemory = persistMemoryUpdate;
+
+if (!_persistMemory) {
+	// If file uses a different name for the real persistence function, adapt here.
+	// ...existing code...
+}
+
+// Create a public saveMemory function that is debounced when configured:
+let saveMemory: (...args: any[]) => void;
+
+if (MEMORY_UPDATE_STRATEGY === 'debounce') {
+	// Use configured debounce interval
+	saveMemory = debounce((_persistMemory as (...args: any[]) => void), DEBOUNCE_MS);
+} else {
+	// immediate or unsupported strategy -> pass-through
+	saveMemory = identity((_persistMemory as (...args: any[]) => void));
+}
+
+// Export (or reassign) the API used elsewhere in the repo:
+export { saveMemory };
+
 export const defaultAgent = storyAgent;
 export const agents = { storyAgent, default: defaultAgent };
+
+// Add a wrapper that only emits memory-update UI notifications when enabled.
+// Adapt the implementation below to the actual send/emitter used in this file.
+// Example: if the file calls `sendToClient(sessionId, msg)` or `pushSystemMessage(...)`
+// replace those direct calls with `maybeNotifyMemoryUpdated(...)`.
+function maybeNotifyMemoryUpdated(sessionId: string, memoryDelta: any, emitter?: (sid: string, msg: any) => void) {
+	// Default: do not send memory UI notifications to users
+	if (!shouldSendMemoryUiNotification()) return;
+
+	// If you have a local emitter function, call it here.
+	// Replace this stub with your actual emitter call or adapt call sites to pass the emitter.
+	if (typeof emitter === 'function') {
+		emitter(sessionId, { type: 'memory-updated', payload: memoryDelta });
+	}
+	// If your code originally used something like `sendToClient(sessionId, msg)`
+	// replace those calls with: maybeNotifyMemoryUpdated(sessionId, delta, sendToClient)
+}
