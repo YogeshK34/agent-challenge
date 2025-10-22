@@ -273,98 +273,135 @@ body {
   outline-offset: 2px;
 }
 
-/* Enhanced CopilotKit styling with more curves and premium design */
-/* CopilotKit Sidebar Customization */
+/* Enhanced CopilotKit styling with wallpaper support and fixed title truncation */
+/* CopilotKit Sidebar Customization - Embedded Layout with Wallpaper Support */
 [data-copilotkit-sidebar-root] {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 50%, #f1f5f9 100%) !important;
-  border-left: none !important;
-  box-shadow: -8px 0 32px rgba(79, 70, 229, 0.12), -4px 0 16px rgba(124, 58, 237, 0.08) !important;
-  border-radius: 24px 0 0 24px !important;
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+  height: 100% !important;
+  width: 100% !important;
+  position: relative !important;
+  display: flex !important;
+  flex-direction: column !important;
 }
 
-/* Chat header with more curves */
+/* Chat header with fixed title truncation and semi-transparent background */
 [data-copilotkit-sidebar-header] {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 50%, #a855f7 100%) !important;
+  background: linear-gradient(
+    135deg,
+    rgba(79, 70, 229, 0.95) 0%,
+    rgba(124, 58, 237, 0.95) 50%,
+    rgba(168, 85, 247, 0.95) 100%
+  ) !important;
   border-bottom: none !important;
-  padding: 2rem 1.5rem !important;
-  border-radius: 24px 0 0 0 !important;
-  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.2) !important;
+  padding: 1.5rem !important;
+  border-radius: 1.5rem 1.5rem 0 0 !important;
+  box-shadow: 0 4px 16px rgba(79, 70, 229, 0.3) !important;
+  margin: 1rem 1rem 0 1rem !important;
+  backdrop-filter: blur(12px) !important;
 }
 
+/* Fixed title truncation with proper wrapping */
 [data-copilotkit-sidebar-header] h2 {
   color: white !important;
-  font-size: 1.5rem !important;
+  font-size: 1.125rem !important;
   font-weight: 700 !important;
   font-family: ui-serif, Georgia, serif !important;
   letter-spacing: -0.025em !important;
+  white-space: normal !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  line-height: 1.4 !important;
+  word-wrap: break-word !important;
 }
 
-/* Chat messages with enhanced curves */
+/* Messages container with semi-transparent background for wallpaper visibility */
+[data-copilotkit-messages-container] {
+  flex: 1 !important;
+  overflow-y: auto !important;
+  padding: 1.5rem !important;
+  margin: 0 1rem !important;
+  background: rgba(255, 255, 255, 0.3) !important;
+  backdrop-filter: blur(8px) !important;
+  border-radius: 0.5rem !important;
+}
+
+/* Chat messages with enhanced semi-transparency */
 [data-copilotkit-message] {
   border-radius: 1.5rem !important;
-  padding: 1.25rem !important;
+  padding: 1rem !important;
   margin-bottom: 1rem !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
   transition: all 0.3s ease !important;
+  backdrop-filter: blur(8px) !important;
 }
 
 [data-copilotkit-message]:hover {
   transform: translateY(-2px) !important;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12) !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.16) !important;
 }
 
-/* User messages with gradient */
+/* User messages with semi-transparent gradient */
 [data-copilotkit-message][data-role="user"] {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.9) 0%, rgba(124, 58, 237, 0.9) 100%) !important;
   color: white !important;
   border-radius: 1.5rem 1.5rem 0.5rem 1.5rem !important;
 }
 
-/* Assistant messages with soft background */
+/* Assistant messages with semi-transparent background */
 [data-copilotkit-message][data-role="assistant"] {
-  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%) !important;
-  border: 2px solid #e2e8f0 !important;
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 2px solid rgba(226, 232, 240, 0.8) !important;
   border-radius: 1.5rem 1.5rem 1.5rem 0.5rem !important;
+  color: #1e293b !important;
 }
 
-/* Input area with enhanced styling */
+/* Input area with semi-transparent background */
 [data-copilotkit-input-container] {
-  border-top: 2px solid #e2e8f0 !important;
+  border-top: 2px solid rgba(226, 232, 240, 0.8) !important;
   padding: 1.5rem !important;
-  background: linear-gradient(to top, #ffffff, #f8fafc) !important;
-  border-radius: 0 0 0 24px !important;
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.9), rgba(248, 250, 252, 0.9)) !important;
+  border-radius: 0 0 1.5rem 1.5rem !important;
+  margin: 0 1rem 1rem 1rem !important;
+  backdrop-filter: blur(12px) !important;
 }
 
 [data-copilotkit-input] {
-  border: 2px solid #e2e8f0 !important;
+  border: 2px solid rgba(226, 232, 240, 0.8) !important;
   border-radius: 1.5rem !important;
-  padding: 1rem 1.25rem !important;
-  font-size: 0.9375rem !important;
+  padding: 0.875rem 1rem !important;
+  font-size: 0.875rem !important;
   transition: all 0.3s ease !important;
-  background: white !important;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04) !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
+  backdrop-filter: blur(8px) !important;
 }
 
 [data-copilotkit-input]:focus {
   border-color: #4f46e5 !important;
-  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.12), 0 4px 12px rgba(79, 70, 229, 0.08) !important;
+  box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.15), 0 4px 12px rgba(79, 70, 229, 0.12) !important;
   outline: none !important;
   transform: translateY(-1px) !important;
+  background: rgba(255, 255, 255, 1) !important;
 }
 
-/* Send button with enhanced curves and gradient */
+/* Send button with semi-transparent gradient */
 [data-copilotkit-send-button] {
-  background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%) !important;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.95) 0%, rgba(124, 58, 237, 0.95) 100%) !important;
   border-radius: 1.25rem !important;
-  padding: 0.75rem 1.5rem !important;
+  padding: 0.625rem 1.25rem !important;
   font-weight: 600 !important;
   transition: all 0.3s ease !important;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3) !important;
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35) !important;
+  backdrop-filter: blur(8px) !important;
 }
 
 [data-copilotkit-send-button]:hover {
   transform: translateY(-2px) scale(1.02) !important;
-  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.4) !important;
+  box-shadow: 0 6px 20px rgba(79, 70, 229, 0.45) !important;
+  background: linear-gradient(135deg, rgba(79, 70, 229, 1) 0%, rgba(124, 58, 237, 1) 100%) !important;
 }
 
 [data-copilotkit-send-button]:active {
@@ -373,7 +410,7 @@ body {
 
 /* Scrollbar in chat with gradient */
 [data-copilotkit-messages-container]::-webkit-scrollbar {
-  width: 8px;
+  width: 6px;
 }
 
 [data-copilotkit-messages-container]::-webkit-scrollbar-track {
@@ -385,7 +422,6 @@ body {
 [data-copilotkit-messages-container]::-webkit-scrollbar-thumb {
   background: linear-gradient(to bottom, #4f46e5, #7c3aed);
   border-radius: 10px;
-  border: 2px solid #f8fafc;
 }
 
 [data-copilotkit-messages-container]::-webkit-scrollbar-thumb:hover {
@@ -394,37 +430,43 @@ body {
 
 /* Typing indicator animation */
 [data-copilotkit-typing-indicator] {
-  background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%) !important;
+  background: rgba(241, 245, 249, 0.9) !important;
   border-radius: 1.5rem !important;
-  padding: 1rem 1.25rem !important;
+  padding: 0.875rem 1rem !important;
+  backdrop-filter: blur(8px) !important;
 }
 
 /* Mobile-specific improvements */
 @media (max-width: 1024px) {
-  /* Make sidebar full width on mobile/tablet */
-  [data-copilotkit-sidebar-root] {
-    width: 100% !important;
-    max-width: 400px !important;
+  [data-copilotkit-sidebar-header] {
+    padding: 1rem !important;
+    margin: 0.75rem 0.75rem 0 0.75rem !important;
+  }
+
+  /* Smaller font size for mobile to prevent truncation */
+  [data-copilotkit-sidebar-header] h2 {
+    font-size: 1rem !important;
+  }
+
+  [data-copilotkit-messages-container] {
+    padding: 1rem !important;
+    margin: 0 0.75rem !important;
+  }
+
+  [data-copilotkit-input-container] {
+    padding: 1rem !important;
+    margin: 0 0.75rem 0.75rem 0.75rem !important;
   }
 }
 
 @media (max-width: 640px) {
-  /* Smaller text and padding on mobile */
-  [data-copilotkit-sidebar-header] {
-    padding: 1rem !important;
-  }
-
   [data-copilotkit-sidebar-header] h2 {
-    font-size: 1.125rem !important;
+    font-size: 0.9375rem !important;
   }
 
   [data-copilotkit-message] {
     padding: 0.75rem !important;
     font-size: 0.875rem !important;
-  }
-
-  [data-copilotkit-input-container] {
-    padding: 0.75rem !important;
   }
 
   [data-copilotkit-input] {
