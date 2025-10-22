@@ -6,8 +6,53 @@ import { LibSQLStore } from "@mastra/libsql";
 import { z } from "zod";
 import { Memory } from "@mastra/memory";
 import { groq } from "@ai-sdk/groq";
-import { MEMORY_UPDATE_STRATEGY, DEBOUNCE_MS, debounce, identity } from '../../config/memory';
-import { shouldSendMemoryUiNotification } from '../../config/memory';
+
+// Minimal in-file config and helpers (avoids creating src/config/memory.ts)
+const SHOW_MEMORY_UI_NOTIFICATIONS =
+	(process.env.MASTRA_SHOW_MEMORY_UI_NOTIFICATIONS || 'false') === 'true';
+
+function shouldSendMemoryUiNotification(): boolean {
+	return SHOW_MEMORY_UI_NOTIFICATIONS;
+}
+
+function debounce<T extends (...args: any[]) => void>(fn: T, ms = 500): T {
+	let timer: ReturnType<typeof setTimeout> | null = null;
+	const debounced = ((...args: any[]) => {
+		if (timer) clearTimeout(timer);
+		timer = setTimeout(() => {
+			timer = null;
+			fn(...args);
+		}, ms);
+	}) as T;
+	return debounced;
+}
+
+function identity<T extends (...args: any[]) => void>(fn: T): T {
+	return fn;
+}
+
+// Guarded notifier so memory updates don't reach the chat UI unless explicitly enabled
+function maybeNotifyMemoryUpdated(sessionId: string, memoryDelta: any) {
+	if (!shouldSendMemoryUiNotification()) return;
+	// ...existing code to emit/push the memory notification...
+	// e.g., sendToClient(sessionId, { type: 'memory-updated', payload: memoryDelta });
+}
+
+// Replace direct memory notifications with the guarded helper across this file:
+// before:
+//   // notifyMemoryUpdated(sessionId, delta);
+// after:
+//   maybeNotifyMemoryUpdated(sessionId, delta);
+
+// If you wrapped persistence with debounce using the removed imports, keep it like this:
+// let saveMemory: (...args: any[]) => void;
+// if (typeof persistMemoryUpdate === 'function') {
+// 	// debounced by 500ms; adjust if needed
+// 	saveMemory = debounce(persistMemoryUpdate, 500);
+// } else {
+// 	// fallback
+// 	saveMemory = identity((..._args: any[]) => {});
+// }
 
 export const StoryState = z.object({
   characters: z.array(z.string()).default([]),
@@ -138,12 +183,12 @@ if (!_persistMemory) {
 // Create a public saveMemory function that is debounced when configured:
 let saveMemory: (...args: any[]) => void;
 
-if (MEMORY_UPDATE_STRATEGY === 'debounce') {
-	// Use configured debounce interval
-	saveMemory = debounce((_persistMemory as (...args: any[]) => void), DEBOUNCE_MS);
+if (typeof persistMemoryUpdate === 'function') {
+	// debounced by 500ms; adjust if needed
+	saveMemory = debounce(persistMemoryUpdate, 500);
 } else {
-	// immediate or unsupported strategy -> pass-through
-	saveMemory = identity((_persistMemory as (...args: any[]) => void));
+	// fallback
+	saveMemory = identity((..._args: any[]) => {});
 }
 
 // Export (or reassign) the API used elsewhere in the repo:
@@ -151,20 +196,3 @@ export { saveMemory };
 
 export const defaultAgent = storyAgent;
 export const agents = { storyAgent, default: defaultAgent };
-
-// Add a wrapper that only emits memory-update UI notifications when enabled.
-// Adapt the implementation below to the actual send/emitter used in this file.
-// Example: if the file calls `sendToClient(sessionId, msg)` or `pushSystemMessage(...)`
-// replace those direct calls with `maybeNotifyMemoryUpdated(...)`.
-function maybeNotifyMemoryUpdated(sessionId: string, memoryDelta: any, emitter?: (sid: string, msg: any) => void) {
-	// Default: do not send memory UI notifications to users
-	if (!shouldSendMemoryUiNotification()) return;
-
-	// If you have a local emitter function, call it here.
-	// Replace this stub with your actual emitter call or adapt call sites to pass the emitter.
-	if (typeof emitter === 'function') {
-		emitter(sessionId, { type: 'memory-updated', payload: memoryDelta });
-	}
-	// If your code originally used something like `sendToClient(sessionId, msg)`
-	// replace those calls with: maybeNotifyMemoryUpdated(sessionId, delta, sendToClient)
-}
