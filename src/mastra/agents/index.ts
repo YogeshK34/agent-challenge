@@ -130,6 +130,9 @@ export const storyAgent = new Agent({
     "- If you are unsure about a detail, ask the user for clarification or state that you are unsure.",
     "- Always ground your responses in the current memory and user input.",
     "",
+    // --- Emoji enhancement ---
+    "- Where appropriate, include relevant emojis in your storytelling outputs to enhance mood, emotion, or scene description.",
+    "",
     "Personalization:",
     "- Respect userProfile (name, preferences) and narrativeSettings (pov, tense, pacing, readingLevel).",
     "- Honor stylePreset (neutral | noir | whimsical | hard-sci-fi | fantasy) and toneHints.",

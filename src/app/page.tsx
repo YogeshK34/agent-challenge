@@ -1,6 +1,6 @@
 "use client"
 
-import { useCoAgent, useCopilotAction } from "@copilotkit/react-core"
+import { useCoAgent, useCopilotAction, useCopilotChat } from "@copilotkit/react-core"
 import { type CopilotKitCSSProperties, CopilotSidebar } from "@copilotkit/react-ui"
 import { useMemo, useState } from "react"
 import type { StoryState as StoryStateSchema } from "@/mastra/agents/state"
@@ -39,6 +39,44 @@ function YourMainContent({
   currentAgent,
 }: { themeColor: string; setThemeColor: (color: string) => void; currentAgent: any }) {
   const [selectedTemplate, setSelectedTemplate] = useState<TemplateId | null>(null)
+
+  // Add CopilotKit chat hook to send prompts
+  const { appendMessage } = useCopilotChat();
+  const sendMessage = appendMessage;
+
+  // Define template-specific suggested prompts
+  const templatePrompts: Record<TemplateId, string[]> = {
+    whimsical: [
+      "Add a talking animal character.",
+      "Describe a magical event in the market.",
+      "Continue the story with a playful twist.",
+    ],
+    thriller: [
+      "Introduce a mysterious clue.",
+      "Set the scene in a dark alley.",
+      "Offer three suspenseful plot options.",
+    ],
+    "epic-lore": [
+      "Add a legendary artifact.",
+      "Describe a mythic event in the world.",
+      "Continue with a solemn tone.",
+    ],
+    romance: [
+      "Add a romantic interest.",
+      "Describe a heartfelt moment.",
+      "Continue with an emotional twist.",
+    ],
+    "sci-fi": [
+      "Introduce a futuristic technology.",
+      "Describe an alien world element.",
+      "Continue with a bold discovery.",
+    ],
+    fantasy: [
+      "Add a magical creature.",
+      "Describe a prophecy.",
+      "Continue with a heroic quest.",
+    ],
+  }
 
   const { state, setState } = useCoAgent<StoryState>({
     name: "storyAgent",
@@ -354,7 +392,6 @@ function YourMainContent({
                 </div>
               </section>
             </div>
-
             {/* Footer Stats */}
             <footer
               className="mt-8 md:mt-12 grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 animate-fade-in"
