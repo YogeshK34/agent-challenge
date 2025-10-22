@@ -1,6 +1,6 @@
 "use client"
 
-import { useCoAgent, useCopilotAction, useCopilotChat } from "@copilotkit/react-core"
+import { useCoAgent, useCopilotAction } from "@copilotkit/react-core"
 import { type CopilotKitCSSProperties, CopilotSidebar } from "@copilotkit/react-ui"
 import { useMemo, useState } from "react"
 import type { StoryState as StoryStateSchema } from "@/mastra/agents/state"
@@ -11,73 +11,113 @@ import { Sparkles, User, Globe, Zap, X, BookOpen, Wand2, ArrowLeft } from "lucid
 
 type StoryState = z.infer<typeof StoryStateSchema>
 
+// Helper function for genre-specific prompts
+function getGenreSpecificPrompts(templateId: TemplateId): string {
+  const prompts: Record<TemplateId, string> = {
+    whimsical: `- "Add a whimsical character who collects impossible things"
+- "Describe a magical market that only appears at dawn"
+- "What happens when the talking compass gets lost?"`,
+    thriller: `- "Introduce a suspicious character with a hidden agenda"
+- "Add a plot twist that changes everything"
+- "What dark secret is the city hiding?"`,
+    "epic-lore": `- "Reveal an ancient prophecy about the bell tower"
+- "Add a legendary artifact with a terrible cost"
+- "What empire fell here, and why?"`,
+    romance: `- "Create a moment of unexpected connection"
+- "Add a complication that tests their feelings"
+- "What letter was never meant to be read?"`,
+    "sci-fi": `- "Introduce an alien technology with ethical implications"
+- "What does the bio-signal really mean?"
+- "Add a scientific discovery that changes everything"`,
+    fantasy: `- "Reveal the true power of the glass map"
+- "Add a magical creature bound by ancient rules"
+- "What destiny is Ari trying to escape?"`,
+    horror: `- "Describe what Helena sees in the mirror"
+- "Add a supernatural entity that feeds on fear"
+- "What happened in room 237?"`,
+    cyberpunk: `- "Introduce a corpo conspiracy that goes to the top"
+- "What memories did Raze lose, and why?"
+- "Add a black market deal that goes sideways"`,
+  }
+
+  return prompts[templateId] || "- Continue the story\n- Add a new character\n- Develop the world"
+}
+
 export default function CopilotKitPage() {
   const [themeColor, setThemeColor] = useState("#6366f1")
+  const [selectedTemplate, setSelectedTemplate] = useState<TemplateId | null>(null)
 
   const currentAgent = agentCatalog[defaultAgentId]
 
+  const dynamicLabels = useMemo(() => {
+    if (!selectedTemplate) {
+      return {
+        title: "Storyteller AI",
+        initial:
+          'Pick a template to seed your world, or say "Start with Fantasy".\n\nAfter that, try:\n- Add a character with a secret\n- Set style to noir and continue the scene\n- Offer 3 next plot options with pros/cons',
+      }
+    }
+
+    const template = getTemplateById(selectedTemplate)
+    if (!template) {
+      return {
+        title: "Storyteller AI",
+        initial: "Ready to craft your story!",
+      }
+    }
+
+    // Build template-specific context
+    const styleContext = template.patch.stylePreset ? `Style: ${template.patch.stylePreset}` : ""
+    const toneContext = template.patch.toneHints?.length ? `Tone: ${template.patch.toneHints.join(", ")}` : ""
+    const themesContext = template.patch.themes?.length ? `Themes: ${template.patch.themes.join(", ")}` : ""
+
+    const initialMessage = `${template.emoji} **${template.label} Story Mode**
+
+${styleContext}
+${toneContext}
+${themesContext}
+
+**Try these ${template.label.toLowerCase()} prompts:**
+${getGenreSpecificPrompts(selectedTemplate)}
+
+You can also:
+- Add more characters fitting this genre
+- Expand the world with ${template.label.toLowerCase()} elements
+- Continue the plot with genre-appropriate twists`
+
+    return {
+      title: `${template.emoji} ${template.label} Storyteller`,
+      initial: initialMessage,
+    }
+  }, [selectedTemplate])
+
   return (
     <main style={{ "--copilot-kit-primary-color": themeColor } as CopilotKitCSSProperties}>
-      <YourMainContent themeColor={themeColor} setThemeColor={setThemeColor} currentAgent={currentAgent} />
-      <CopilotSidebar
-        clickOutsideToClose={false}
-        defaultOpen={true}
-        labels={{
-          title: "Storyteller AI",
-          initial:
-            'Pick a template to seed your world, or say "Start with Fantasy".\n\nAfter that, try:\n- Add a character with a secret\n- Set style to noir and continue the scene\n- Offer 3 next plot options with pros/cons',
-        }}
+      <YourMainContent
+        themeColor={themeColor}
+        setThemeColor={setThemeColor}
+        currentAgent={currentAgent}
+        selectedTemplate={selectedTemplate}
+        setSelectedTemplate={setSelectedTemplate}
       />
+      <CopilotSidebar clickOutsideToClose={false} defaultOpen={true} labels={dynamicLabels} />
     </main>
   )
 }
-
 
 function YourMainContent({
   themeColor,
   setThemeColor,
   currentAgent,
-}: { themeColor: string; setThemeColor: (color: string) => void; currentAgent: any }) {
-  const [selectedTemplate, setSelectedTemplate] = useState<TemplateId | null>(null)
-
-  // Add CopilotKit chat hook to send prompts
-  const { appendMessage } = useCopilotChat();
-  const sendMessage = appendMessage;
-
-  // Define template-specific suggested prompts
-  const templatePrompts: Record<TemplateId, string[]> = {
-    whimsical: [
-      "Add a talking animal character.",
-      "Describe a magical event in the market.",
-      "Continue the story with a playful twist.",
-    ],
-    thriller: [
-      "Introduce a mysterious clue.",
-      "Set the scene in a dark alley.",
-      "Offer three suspenseful plot options.",
-    ],
-    "epic-lore": [
-      "Add a legendary artifact.",
-      "Describe a mythic event in the world.",
-      "Continue with a solemn tone.",
-    ],
-    romance: [
-      "Add a romantic interest.",
-      "Describe a heartfelt moment.",
-      "Continue with an emotional twist.",
-    ],
-    "sci-fi": [
-      "Introduce a futuristic technology.",
-      "Describe an alien world element.",
-      "Continue with a bold discovery.",
-    ],
-    fantasy: [
-      "Add a magical creature.",
-      "Describe a prophecy.",
-      "Continue with a heroic quest.",
-    ],
-  }
-
+  selectedTemplate,
+  setSelectedTemplate,
+}: {
+  themeColor: string
+  setThemeColor: (color: string) => void
+  currentAgent: any
+  selectedTemplate: TemplateId | null
+  setSelectedTemplate: (template: TemplateId | null) => void
+}) {
   const { state, setState } = useCoAgent<StoryState>({
     name: "storyAgent",
     initialState: {
@@ -124,7 +164,6 @@ function YourMainContent({
       { name: "canonFacts", required: false },
       { name: "themes", required: false },
     ],
-    // To hide the memory updates tab, comment out or remove the render property below:
     // render: ({ args }) => {
     //   const patch = (args as any)?.memory ?? args
     //   return (
@@ -392,6 +431,7 @@ function YourMainContent({
                 </div>
               </section>
             </div>
+
             {/* Footer Stats */}
             <footer
               className="mt-8 md:mt-12 grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4 animate-fade-in"

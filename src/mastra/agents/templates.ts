@@ -1,4 +1,12 @@
-export type TemplateId = "whimsical" | "thriller" | "epic-lore" | "romance" | "sci-fi" | "fantasy"
+export type TemplateId =
+  | "whimsical"
+  | "thriller"
+  | "epic-lore"
+  | "romance"
+  | "sci-fi"
+  | "fantasy"
+  | "horror"
+  | "cyberpunk"
 
 export type Template = {
   id: TemplateId
@@ -26,7 +34,8 @@ export const TEMPLATES: Template[] = [
     id: "whimsical",
     label: "Whimsical",
     emoji: "🎭",
-    description: "Lighthearted, magical, quirky adventures. Inspired by Alice in Wonderland, Studio Ghibli, and Adventure Time.",
+    description:
+      "Lighthearted, magical, quirky adventures. Inspired by Alice in Wonderland, Studio Ghibli, and Adventure Time.",
     patch: {
       stylePreset: "whimsical",
       toneHints: ["playful", "imaginative", "warm"],
@@ -35,13 +44,13 @@ export const TEMPLATES: Template[] = [
         "Nyla, a curious explorer",
         "Pip, a talking compass",
         "Totoro, a gentle forest spirit (Ghibli)",
-        "Finn, a brave adventurer (Adventure Time)"
+        "Finn, a brave adventurer (Adventure Time)",
       ],
       worldNotes: [
         "Markets that float at dawn",
         "Postcards deliver themselves by breeze",
         "Tea parties with the Mad Hatter (Alice in Wonderland)",
-        "Catbus travels between magical realms (Ghibli)"
+        "Catbus travels between magical realms (Ghibli)",
       ],
       plotBeats: ["Nyla follows a giggling breeze into a hidden alley"],
       canonFacts: ["The wind sometimes speaks in riddles"],
@@ -65,13 +74,13 @@ export const TEMPLATES: Template[] = [
         "Jade, an insomniac journalist",
         "The Caller, identity unknown",
         "Eleven, a girl with psychic powers (Stranger Things)",
-        "Detective Rust Cohle (True Detective)"
+        "Detective Rust Cohle (True Detective)",
       ],
       worldNotes: [
         "City alleys stutter with flickering neon",
         "Police scanners hiss like rain",
         "The Upside Down leaks into reality (Stranger Things)",
-        "Victorian London fog (Sherlock Holmes)"
+        "Victorian London fog (Sherlock Holmes)",
       ],
       plotBeats: ["A distorted voicemail names Jade as the next target"],
       canonFacts: ["The Caller always knows tomorrow's headlines"],
@@ -86,7 +95,8 @@ export const TEMPLATES: Template[] = [
     id: "epic-lore",
     label: "Epic Lore",
     emoji: "📚",
-    description: "Mythic histories and world-building heavy tales. Inspired by Lord of the Rings, Game of Thrones, and Dune.",
+    description:
+      "Mythic histories and world-building heavy tales. Inspired by Lord of the Rings, Game of Thrones, and Dune.",
     patch: {
       stylePreset: "neutral",
       toneHints: ["mythic", "solemn", "expansive"],
@@ -95,13 +105,13 @@ export const TEMPLATES: Template[] = [
         "Archivist Liora",
         "The Last Bellringer",
         "Aragorn, the ranger king (Lord of the Rings)",
-        "Daenerys Targaryen, Mother of Dragons (Game of Thrones)"
+        "Daenerys Targaryen, Mother of Dragons (Game of Thrones)",
       ],
       worldNotes: [
         "Empires record their reigns in living stone",
         "Bell towers thread time together",
         "The Shire, a peaceful land (Lord of the Rings)",
-        "Arrakis, desert planet (Dune)"
+        "Arrakis, desert planet (Dune)",
       ],
       plotBeats: ["A bell toll echoes from a tower sealed for a century"],
       canonFacts: ["Stone remembers every oath spoken upon it"],
@@ -125,13 +135,13 @@ export const TEMPLATES: Template[] = [
         "Mina, a pastry chef",
         "Elio, a street violinist",
         "Elizabeth Bennet (Pride & Prejudice)",
-        "Jack Dawson (Titanic)"
+        "Jack Dawson (Titanic)",
       ],
       worldNotes: [
         "A café where strangers leave letters for fate",
         "Moonlit bridges with secret inscriptions",
         "The ballroom from Titanic",
-        "Jazz clubs of Los Angeles (La La Land)"
+        "Jazz clubs of Los Angeles (La La Land)",
       ],
       plotBeats: ["A misdelivered letter reopens a closed door"],
       canonFacts: ["Every bridge has a witness mark for true confessions"],
@@ -155,13 +165,13 @@ export const TEMPLATES: Template[] = [
         "Dr. Rhea Kade, exoplanet biologist",
         "Unit K-17, a curious probe",
         "Spock, science officer (Star Trek)",
-        "Deckard, blade runner (Blade Runner)"
+        "Deckard, blade runner (Blade Runner)",
       ],
       worldNotes: [
         "Tidal-locked planet with twilight cities",
         "Signal blooms that grow like coral",
         "The Millennium Falcon (Star Wars)",
-        "Neon-lit cityscape (Blade Runner)"
+        "Neon-lit cityscape (Blade Runner)",
       ],
       plotBeats: ["A bio-signal matches Earth's prehistory"],
       canonFacts: ["K-17 is learning to want, against spec"],
@@ -186,14 +196,14 @@ export const TEMPLATES: Template[] = [
         "Seren, a lanternbound spirit",
         "Geralt of Rivia (The Witcher)",
         "Link, hero of Hyrule (Zelda)",
-        "Hermione Granger (Harry Potter)"
+        "Hermione Granger (Harry Potter)",
       ],
       worldNotes: [
         "A misty archipelago connected by sky-bridges",
         "Runes stitched into sails",
         "Hogwarts castle (Harry Potter)",
         "Kaer Morhen fortress (The Witcher)",
-        "Lost Woods (Zelda)"
+        "Lost Woods (Zelda)",
       ],
       plotBeats: ["Ari discovers an old map etched into glass"],
       canonFacts: ["Lanterns glow brighter in the presence of true names"],
@@ -202,6 +212,68 @@ export const TEMPLATES: Template[] = [
       characters: ["Geralt", "Hermione", "Link"],
       worldNotes: ["Hogwarts", "Kaer Morhen", "Lost Woods"],
       plotBeats: ["A magical duel begins", "A prophecy is fulfilled"],
+    },
+  },
+  {
+    id: "horror",
+    label: "Horror/Gothic",
+    emoji: "🦇",
+    description:
+      "Dark atmospheres, supernatural dread, and psychological terror. Inspired by Dracula, The Shining, and Silent Hill.",
+    patch: {
+      stylePreset: "noir",
+      toneHints: ["ominous", "unsettling", "atmospheric"],
+      themes: ["Fear", "Isolation", "The Unknown"],
+      characters: [
+        "Dr. Helena Voss, paranormal investigator",
+        "The Caretaker, who never speaks",
+        "Count Dracula (Dracula)",
+        "Jack Torrance (The Shining)",
+      ],
+      worldNotes: [
+        "An abandoned hotel where rooms rearrange at night",
+        "Fog that whispers forgotten names",
+        "The Overlook Hotel (The Shining)",
+        "Silent Hill's otherworld (Silent Hill)",
+      ],
+      plotBeats: ["Helena finds a journal entry dated tomorrow"],
+      canonFacts: ["Mirrors show what happened, not what is"],
+    },
+    examples: {
+      characters: ["Count Dracula", "Jack Torrance", "Pyramid Head"],
+      worldNotes: ["The Overlook Hotel", "Silent Hill", "Transylvania castle"],
+      plotBeats: ["A door that wasn't there before", "The lights go out one by one"],
+    },
+  },
+  {
+    id: "cyberpunk",
+    label: "Cyberpunk",
+    emoji: "🌃",
+    description:
+      "Tech-noir, dystopian futures, and digital rebellion. Inspired by Neuromancer, Cyberpunk 2077, and Ghost in the Shell.",
+    patch: {
+      stylePreset: "noir",
+      toneHints: ["gritty", "neon-soaked", "rebellious"],
+      themes: ["Identity", "Corporate Control", "Transhumanism"],
+      characters: [
+        "Raze, a netrunner with illegal implants",
+        "ECHO-7, a rogue AI",
+        "Case, console cowboy (Neuromancer)",
+        "Major Kusanagi (Ghost in the Shell)",
+      ],
+      worldNotes: [
+        "Megacorporations own the sky, gangs rule the streets",
+        "Black market clinics install chrome and wetware",
+        "Night City (Cyberpunk 2077)",
+        "Neo-Tokyo (Ghost in the Shell)",
+      ],
+      plotBeats: ["Raze jacks into a corporate server and finds their own deleted memories"],
+      canonFacts: ["The Net remembers everything, even what's been erased"],
+    },
+    examples: {
+      characters: ["Case", "Major Kusanagi", "V (Cyberpunk 2077)"],
+      worldNotes: ["Night City", "Neo-Tokyo", "The Matrix"],
+      plotBeats: ["A hack goes wrong", "An AI becomes self-aware"],
     },
   },
 ]
