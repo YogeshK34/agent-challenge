@@ -765,19 +765,19 @@ function YourMainContent({
                 <li className="flex items-start gap-2 text-base text-slate-700">
                   <span className="text-green-600 font-bold">•</span>
                   <span>
-                    "Generate a complete {template.label.toLowerCase()} story using all my selected characters, world
-                    notes, and plot beats"
+                    &quot;Generate a complete {template.label.toLowerCase()} story using all my selected characters, world
+                    notes, and plot beats&quot;
                   </span>
                 </li>
                 <li className="flex items-start gap-2 text-base text-slate-700">
                   <span className="text-green-600 font-bold">•</span>
-                  <span>"Write a full narrative that weaves together all the elements I've chosen"</span>
+                  <span>&quot;Write a full narrative that weaves together all the elements I&aspos;ve chosen&quot;</span>
                 </li>
                 <li className="flex items-start gap-2 text-base text-slate-700">
                   <span className="text-green-600 font-bold">•</span>
                   <span>
-                    "Create a {template.label.toLowerCase()} story incorporating my characters in the world setting with
-                    the plot beats"
+                    &quot;Create a {template.label.toLowerCase()} story incorporating my characters in the world setting with
+                    the plot beats&quot;
                   </span>
                 </li>
               </ul>
