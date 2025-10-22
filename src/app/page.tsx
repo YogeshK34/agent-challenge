@@ -385,7 +385,7 @@ function YourMainContent({
 
   useEffect(() => {
     setResetStoryCallback(() => resetStory)
-  }, [setResetStoryCallback])
+  }, [resetStory, setResetStoryCallback])
 
   const showPicker = useMemo(() => {
     return !selectedTemplate
@@ -763,7 +763,7 @@ function YourMainContent({
                 {template.examples?.plotBeats?.slice(0, 3).map((prompt: string, idx: number) => (
                   <li key={idx} className="flex items-start gap-2 text-base text-slate-700">
                     <span className="text-green-600 font-bold">•</span>
-                    <span>"{prompt}"</span>
+                    <span>&quot;{prompt}&quot;</span>
                   </li>
                 ))}
               </ul>
