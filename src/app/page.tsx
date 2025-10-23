@@ -771,7 +771,7 @@ function YourMainContent({
                 </li>
                 <li className="flex items-start gap-2 text-base text-slate-700">
                   <span className="text-green-600 font-bold">•</span>
-                  <span>&quot;Write a full narrative that weaves together all the elements I&aspos;ve chosen&quot;</span>
+                  <span>&quot;Write a full narrative that weaves together all the elements I have chosen&quot;</span>
                 </li>
                 <li className="flex items-start gap-2 text-base text-slate-700">
                   <span className="text-green-600 font-bold">•</span>
