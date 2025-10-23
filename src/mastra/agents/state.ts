@@ -4,7 +4,6 @@ export const AgentState = z.object({
   proverbs: z.array(z.string()).default([]),
 })
 
-// Agent outputs should be grounded in this state; avoid hallucinating details not present here.
 export const StoryState = z.object({
   characters: z.array(z.string()).default([]),
   worldNotes: z.array(z.string()).default([]),
@@ -13,6 +12,12 @@ export const StoryState = z.object({
   toneHints: z.array(z.string()).default([]),
   branches: z.array(z.any()).default([]),
   lastPlan: z.string().default(""),
+  
+  // NEW: Story progression tracking
+  storyProgress: z.enum(["beginning", "middle", "climax", "ending", "complete"]).default("beginning"),
+  plotBeatsResolved: z.number().default(0),
+  turnCount: z.number().default(0), // Track conversation turns
+  
   userProfile: z
     .object({
       name: z.string().default(""),
