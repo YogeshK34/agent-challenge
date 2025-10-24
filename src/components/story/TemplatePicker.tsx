@@ -1,7 +1,8 @@
 "use client"
 
-import { Wand2, Sparkles } from "lucide-react"
+import { Wand2, Sparkles, HelpCircle } from "lucide-react"
 import { TEMPLATES, type TemplateId } from "@/mastra/agents/templates"
+import Link from "next/link"
 
 interface TemplatePickerProps {
   onSelect: (id: TemplateId) => void
@@ -17,10 +18,17 @@ export function TemplatePicker({ onSelect }: TemplatePickerProps) {
           </div>
           <h2 className="text-3xl sm:text-4xl font-serif font-bold text-slate-900">Choose Your Genre</h2>
         </div>
-        <p className="text-slate-600 text-sm md:text-base max-w-2xl mx-auto leading-relaxed">
+        <p className="text-slate-600 text-sm md:text-base max-w-2xl mx-auto leading-relaxed mb-4">
           Start with a curated template and interactively build your story by selecting characters, world notes, and
           plot beats through the chat.
         </p>
+        <Link
+          href="/how-to-use"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white text-sm font-medium rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105"
+        >
+          <HelpCircle className="w-4 h-4" />
+          How to Use
+        </Link>
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">

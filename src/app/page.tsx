@@ -4,7 +4,8 @@ import { type CopilotKitCSSProperties, CopilotSidebar } from "@copilotkit/react-
 import { useMemo, useState } from "react"
 import { agentCatalog, defaultAgentId } from "@/mastra/agents/meta"
 import { getTemplateById, type TemplateId } from "@/mastra/agents/templates"
-import { BookOpen, ArrowLeft } from "lucide-react"
+import { BookOpen, ArrowLeft, HelpCircle } from "lucide-react"
+import Link from "next/link"
 import { YourMainContent } from "@/components/story/YourMainContent"
 import { FooterStats } from "@/components/story/FooterStats"
 import type { StoryStats } from "@/types/story"
@@ -90,34 +91,45 @@ Once you've completed all selections, I'll show you story prompts to get started
             </div>
           </div>
 
-          {!selectedTemplate && (
-            <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-full shadow-sm">
-              <div className="relative">
-                <div className="w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full animate-pulse" />
-                <div className="absolute inset-0 w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full animate-ping opacity-75" />
-              </div>
-              <span className="text-xs sm:text-sm font-semibold text-slate-900 whitespace-nowrap">
-                {currentAgent.label} Agent
-              </span>
-            </div>
-          )}
-
-          {selectedTemplate && (
-            <button
-              onClick={() => {
-                if (resetStoryCallback) {
-                  resetStoryCallback()
-                }
-              }}
+          <div className="flex items-center gap-2 sm:gap-3">
+            <Link
+              href="/how-to-use"
               className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-white/80 backdrop-blur-sm border border-slate-300 hover:border-indigo-400 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 group touch-manipulation"
-              aria-label="Back to templates"
+              aria-label="How to use"
             >
-              <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600 group-hover:text-indigo-600 transition-colors" />
+              <HelpCircle className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600 group-hover:text-indigo-600 transition-colors" />
               <span className="text-sm sm:text-base font-medium text-slate-700 group-hover:text-indigo-700 transition-colors hidden sm:inline">
-                Back
+                How to Use
               </span>
-            </button>
-          )}
+            </Link>
+
+            {!selectedTemplate && (
+              <div className="inline-flex items-center gap-2 px-3 sm:px-4 py-2 bg-white/80 backdrop-blur-sm border border-slate-200 rounded-full shadow-sm">
+                <div className="absolute inset-0 w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full animate-pulse" />
+                <div className="absolute inset-0 w-2 h-2 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-full animate-ping opacity-75" />
+                <span className="text-xs sm:text-sm font-semibold text-slate-900 whitespace-nowrap">
+                  {currentAgent.label} Agent
+                </span>
+              </div>
+            )}
+
+            {selectedTemplate && (
+              <button
+                onClick={() => {
+                  if (resetStoryCallback) {
+                    resetStoryCallback()
+                  }
+                }}
+                className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-white/80 backdrop-blur-sm border border-slate-300 hover:border-indigo-400 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5 group touch-manipulation"
+                aria-label="Back to templates"
+              >
+                <ArrowLeft className="w-4 h-4 sm:w-5 sm:h-5 text-slate-600 group-hover:text-indigo-600 transition-colors" />
+                <span className="text-sm sm:text-base font-medium text-slate-700 group-hover:text-indigo-700 transition-colors hidden sm:inline">
+                  Back
+                </span>
+              </button>
+            )}
+          </div>
         </div>
       </header>
 
@@ -156,7 +168,12 @@ Once you've completed all selections, I'll show you story prompts to get started
             }}
           >
             <div className="relative z-10 flex-1 flex flex-col bg-white/60">
-              <CopilotSidebar clickOutsideToClose={false} defaultOpen={true} labels={dynamicLabels} className="copilot-sidebar-eembedded" />
+              <CopilotSidebar
+                clickOutsideToClose={false}
+                defaultOpen={true}
+                labels={dynamicLabels}
+                className="copilot-sidebar-embedded"
+              />
             </div>
           </div>
         </div>
