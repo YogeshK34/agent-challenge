@@ -1,51 +1,61 @@
-# Git
+# Dependencies
+node_modules
+.pnpm-store
+
+# Build outputs
+.next
+.mastra
+out
+dist
+build
+
+# Development files
 .git
 .gitignore
-
-# Node
-node_modules
+*.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# Environment files
+# Testing
+coverage
+.nyc_output
+
+# Environment variables (commented out for bounty submission)
+# Uncomment this line for production builds to exclude .env
+# .env
 .env.local
-.env.example
-.env.*.local
-.env.*
+.env.development.local
+.env.test.local
+.env.production.local
 
-# Build output
-.mastra/
-dist/
-build/
-
-# IDE
-.vscode/
-.idea/
+# IDE and OS files
+.vscode
+.idea
 *.swp
 *.swo
 *~
-
-# OS
 .DS_Store
 Thumbs.db
 
 # Documentation
-*.md
+README.md
 LICENSE
+*.md
+!package.json
 
-# Docker
+# Docker files
 Dockerfile
+docker-compose.yml
 .dockerignore
 
-# Temporary files
-*.tmp
-*.temp
-.cache/
+# Assets (keep only necessary ones, uncomment to exclude)
+# assets
 
-# Test files
-coverage/
-.nyc_output/
-*.test.js
-*.spec.js
+# Nosana job definitions
+nos_job_def
+
+# Misc
+*.tsbuildinfo
+.eslintcache

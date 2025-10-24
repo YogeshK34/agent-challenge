@@ -218,7 +218,7 @@ Your submission **must** include:
 ### Using Nosana CLI (Alternative)
 ```bash
 npm install -g @nosana/cli
-nosana job post --file ./nos_job_def/nosana_mastra.json --market nvidia-3090 --timeout 30
+nosana job post --file ./nos_job_def/nosana_mastra_job_definition.json --market nvidia-3090 --timeout 30
 ```
 
 ## 🏆 Judging Criteria
