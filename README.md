@@ -5,7 +5,6 @@
 
 ## Welcome to the AI Agent Challenge
 
-
 Build and deploy intelligent AI agents using the **Mastra framework** on the **Nosana decentralized compute network**. Whether you're a beginner or an experienced developer, this challenge has something for everyone!
 
 ## 🎯 Challenge Overview
@@ -105,94 +104,13 @@ OLLAMA_API_URL=http://127.0.0.1:11434/api
 MODEL_NAME_AT_ENDPOINT=qwen3:0.6b
 ```
 
-##### Option C: Use Groq
+##### Option C: Use OpenAI
 
-Set your `.env` and the provider in `MODEL_PROVIDER`:
-
-```env
-MODEL_PROVIDER=groq
-GROQ_API_KEY=your-key-here
-GROQ_MODEL=llama-3.1-8b-instant
-```
-
-The agent will automatically route to Groq when `MODEL_PROVIDER=groq`. Use Ollama by setting `MODEL_PROVIDER=ollama`.
-
-## How This Project Can Score High
-
-This repo now focuses on a single Storyteller Agent with strong reliability and portability. Below is a concrete plan to maximize each judging category.
-
-### 1. Innovation 🎨
-- Branching narratives: have the agent propose 2–3 next-beat options with pros/cons.
-- Style presets: noir, whimsical, hard sci‑fi; allow quick switching via prompt or a simple UI control.
-- Memory-first UX: expose characters, world notes, and plot beats in the UI as a “Story Board” users can edit.
-- Multi-turn planning: agent explains its plan briefly before long outputs.
-- Optional next steps: add “story tools” (addCharacter, addWorldNote, addPlotBeat, resetStory) for deterministic edits.
-
-### 2. Technical Implementation 💻
-- Robust config:
-  - Model routing via env: Groq or Ollama with `MODEL_PROVIDER`.
-  - Persistent memory via `MASTRA_DB_URL` (default: `file:./data/mastra.db`).
-- Guardrails:
-  - Safer, explicit system instructions (tone, continuity, suitability).
-  - Ask clarifying questions before big story shifts.
-- Code hygiene:
-  - Agents are server-only (no client bundling) and UI uses meta/state modules.
-  - Clear environment fallbacks and typed schemas (Zod).
-- Reliability:
-  - Keep responses concise by default; summarize when long.
-  - Prefer deterministic edits if/when you add story tools.
-
-### 3. Nosana Integration ⚡
-- Single container runs agent + UI; persistent storage works out of the box.
-- Resource efficiency:
-  - Default to Ollama small model (qwen3:8b) for local/dev; allow OpenAI for higher quality demos.
-  - Stream responses to reduce latency perceived by users.
-- Deployment:
-  - Provide your Docker image in nosana_mastra.json and README (already scaffolded).
-  - Use env to switch providers without rebuilding.
-
-### 4. Real-World Impact 🌍
-- Use cases:
-  - Writers’ room collaborator for ideation and continuity.
-  - Game quest/narrative prototyping with controlled beats and character bios.
-- Value proposition:
-  - Editable memory + branching suggestions → faster iteration + creative control.
-- Demo:
-  - Show the Story Board evolving in real time.
-  - Record a 1–3 min video demonstrating: adding characters/notes/beats, selecting a style, and continuing the story.
-
-## Required Environment for Improvements
-
-Add these to `.env` to enable routing and persistent memory:
+Add to your `.env` and uncomment the OpenAI line in `src/mastra/agents/index.ts`:
 
 ```env
-# Model routing (ollama | groq)
-MODEL_PROVIDER=ollama
-
-# If using Ollama (local or Nosana endpoint)
-OLLAMA_API_URL=http://127.0.0.1:11434/api
-MODEL_NAME_AT_ENDPOINT=qwen3:8b
-
-# If using Groq (optional)
-GROQ_API_KEY=your-key
-GROQ_MODEL=llama-3.1-8b-instant
-
-# Persistent memory (LibSQL)
-MASTRA_DB_URL=file:./data/mastra.db
+OPENAI_API_KEY=your-key-here
 ```
-
-## Common Pitfall: Agent Not Found
-
-In your client code, ensure the coagent name is `storyAgent`:
-
-```ts
-useCoAgent({
-  name: "storyAgent",
-  // ...
-})
-```
-
-If you previously used `assistantAgent`, update it to `storyAgent`.
 
 ## 🏗️ Implementation Timeline
 
@@ -386,55 +304,4 @@ Be the first to know about:
 
 Join the Nosana builder community today — and build the future of decentralized AI.
 
-## Files to export for UI work (v0.dev)
 
-Share only client-safe contracts and UI. Avoid server-only modules.
-
-- src/mastra/agents/meta.ts — agent ids, labels, descriptions, default agent id
-- src/mastra/agents/state.ts — StoryState schema (characters, worldNotes, plotBeats)
-- src/components/AgentBadge.tsx — small badge showing current agent type
-- src/app/page.tsx — main UI (banner, sidebar labels, Story Board sections)
-
-Do not export:
-- src/mastra/agents/index.ts (server-only; imports @mastra/core)
-- src/mastra/index.ts and src/mastra/mcp/* (server-only setup)
-
-These files let another AI safely redesign the UI without pulling server dependencies.
-
-## Persistent storage (DB)
-
-This project now uses a persistent database for both:
-- Mastra global storage (runs/ops)
-- Agent working memory (StoryState)
-
-Options:
-- Local file-backed SQLite (default, free)
-  - Set `MASTRA_DB_URL=file:./data/mastra.db` (default if unset)
-  - The container must be able to write to `./data`
-- Remote libSQL (e.g., Turso)
-  - Set:
-    - `MASTRA_DB_URL=libsql://<your-db-url>`
-    - `MASTRA_DB_AUTH_TOKEN=<your-auth-token>`
-
-Environment
-```env
-# Local (default)
-MASTRA_DB_URL=file:./data/mastra.db
-
-# Or remote libSQL (Turso)
-# MASTRA_DB_URL=libsql://your-db-url
-# MASTRA_DB_AUTH_TOKEN=your-token
-```
-
-Docker usage (local volume)
-```bash
-# Persist data on host so container restarts don't wipe memory
-docker run -p 3000:3000 \
-  -e MASTRA_DB_URL=file:/data/mastra.db \
-  -v $(pwd)/data:/data \
-  yourusername/agent-challenge:latest
-```
-
-Nosana notes
-- Ephemeral filesystems may reset between runs; prefer remote libSQL for stable demos.
-- Keep DB env vars in your Nosana job definition; no code changes required.
