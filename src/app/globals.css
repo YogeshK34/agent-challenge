@@ -287,7 +287,7 @@ body {
   flex-direction: column !important;
 }
 
-/* Chat header with fixed title truncation and semi-transparent background */
+/* Chat header with fixed title truncation and semi-transparent background + visibility fixes */
 [data-copilotkit-sidebar-header] {
   background: linear-gradient(
     135deg,
@@ -301,6 +301,14 @@ body {
   box-shadow: 0 4px 16px rgba(79, 70, 229, 0.3) !important;
   margin: 1rem 1rem 0 1rem !important;
   backdrop-filter: blur(12px) !important;
+  /* Critical visibility fixes for all screen sizes */
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+  position: relative !important;
+  height: auto !important;
+  min-height: 60px !important;
+  will-change: auto;
 }
 
 /* Fixed title truncation with proper wrapping */
@@ -317,6 +325,13 @@ body {
   word-wrap: break-word !important;
 }
 
+/* Ensure header content (title and buttons) are always visible */
+[data-copilotkit-sidebar-header] > * {
+  display: flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
+}
+
 /* Messages container with semi-transparent background for wallpaper visibility */
 [data-copilotkit-messages-container] {
   flex: 1 !important;
@@ -326,6 +341,7 @@ body {
   background: rgba(255, 255, 255, 0.3) !important;
   backdrop-filter: blur(8px) !important;
   border-radius: 0.5rem !important;
+  will-change: scroll-position;
 }
 
 /* Chat messages with enhanced semi-transparency */
@@ -334,7 +350,7 @@ body {
   padding: 1rem !important;
   margin-bottom: 1rem !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
-  transition: all 0.3s ease !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
   backdrop-filter: blur(8px) !important;
 }
 
@@ -373,7 +389,7 @@ body {
   border-radius: 1.5rem !important;
   padding: 0.875rem 1rem !important;
   font-size: 0.875rem !important;
-  transition: all 0.3s ease !important;
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease !important;
   background: rgba(255, 255, 255, 0.95) !important;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06) !important;
   backdrop-filter: blur(8px) !important;
@@ -393,7 +409,7 @@ body {
   border-radius: 1.25rem !important;
   padding: 0.625rem 1.25rem !important;
   font-weight: 600 !important;
-  transition: all 0.3s ease !important;
+  transition: transform 0.2s ease, box-shadow 0.2s ease !important;
   box-shadow: 0 4px 12px rgba(79, 70, 229, 0.35) !important;
   backdrop-filter: blur(8px) !important;
 }
@@ -456,6 +472,15 @@ body {
   [data-copilotkit-input-container] {
     padding: 1rem !important;
     margin: 0 0.75rem 0.75rem 0.75rem !important;
+  }
+}
+
+/* Override any media query that might hide the header at desktop sizes */
+@media (min-width: 1024px) {
+  [data-copilotkit-sidebar-header] {
+    display: flex !important;
+    visibility: visible !important;
+    opacity: 1 !important;
   }
 }
 

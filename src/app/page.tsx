@@ -156,7 +156,7 @@ Once you've completed all selections, I'll show you story prompts to get started
             }}
           >
             <div className="relative z-10 flex-1 flex flex-col bg-white/60">
-              <CopilotSidebar clickOutsideToClose={false} defaultOpen={true} labels={dynamicLabels} />
+              <CopilotSidebar clickOutsideToClose={false} defaultOpen={true} labels={dynamicLabels} className="copilot-sidebar-eembedded" />
             </div>
           </div>
         </div>
