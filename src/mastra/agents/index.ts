@@ -1,72 +1,63 @@
-import "dotenv/config";
-import "server-only";
-import { createOllama } from "ollama-ai-provider-v2";
-import { Agent } from "@mastra/core/agent";
-import { LibSQLStore } from "@mastra/libsql";
-import { Memory } from "@mastra/memory";
-import { groq } from "@ai-sdk/groq";
-import { generateCharacterTool, plotTwistGeneratorTool, worldBuildingTool } from "../tools";
-import { StoryState } from "./state"; // ✅ Import from state.ts instead of redefining
+import "dotenv/config"
+import "server-only"
+import { createOllama } from "ollama-ai-provider-v2"
+import { Agent } from "@mastra/core/agent"
+import { LibSQLStore } from "@mastra/libsql"
+import { Memory } from "@mastra/memory"
+import { groq } from "@ai-sdk/groq"
+import { generateCharacterTool, plotTwistGeneratorTool, worldBuildingTool } from "../tools"
+import { StoryState } from "./state" // ✅ Import from state.ts instead of redefining
 
 // Minimal in-file config and helpers (avoids creating src/config/memory.ts)
-const SHOW_MEMORY_UI_NOTIFICATIONS =
-	(process.env.MASTRA_SHOW_MEMORY_UI_NOTIFICATIONS || 'false') === 'true';
+const SHOW_MEMORY_UI_NOTIFICATIONS = (process.env.MASTRA_SHOW_MEMORY_UI_NOTIFICATIONS || "false") === "true"
 
 function shouldSendMemoryUiNotification(): boolean {
-	return SHOW_MEMORY_UI_NOTIFICATIONS;
+  return SHOW_MEMORY_UI_NOTIFICATIONS
 }
 
 function debounce<T extends (...args: any[]) => void>(fn: T, ms = 500): T {
-	let timer: ReturnType<typeof setTimeout> | null = null;
-	const debounced = ((...args: any[]) => {
-		if (timer) clearTimeout(timer);
-		timer = setTimeout(() => {
-			timer = null;
-			fn(...args);
-		}, ms);
-	}) as T;
-	return debounced;
+  let timer: ReturnType<typeof setTimeout> | null = null
+  const debounced = ((...args: any[]) => {
+    if (timer) clearTimeout(timer)
+    timer = setTimeout(() => {
+      timer = null
+      fn(...args)
+    }, ms)
+  }) as T
+  return debounced
 }
 
 function identity<T extends (...args: any[]) => void>(fn: T): T {
-	return fn;
+  return fn
 }
 
 // Guarded notifier so memory updates don't reach the chat UI unless explicitly enabled
 function maybeNotifyMemoryUpdated(sessionId: string, memoryDelta: any) {
-	if (!shouldSendMemoryUiNotification()) return;
-	// ...existing code to emit/push the memory notification...
-	// e.g., sendToClient(sessionId, { type: 'memory-updated', payload: memoryDelta });
+  if (!shouldSendMemoryUiNotification()) return
+  // ...existing code to emit/push the memory notification...
+  // e.g., sendToClient(sessionId, { type: 'memory-updated', payload: memoryDelta });
 }
 
+const GROQ_MODEL = process.env.GROQ_MODEL || "llama-3.1-8b-instant"
+
 // Prefer local OLLAMA_API_URL first; fall back to NOS_* proxy if present
-const ollamaBaseURL =
-  process.env.OLLAMA_API_URL ||
-  process.env.NOS_OLLAMA_API_URL ||
-  process.env.OLLAMA_BASE_URL;
+const ollamaBaseURL = process.env.OLLAMA_API_URL || process.env.NOS_OLLAMA_API_URL || process.env.OLLAMA_BASE_URL
 
 // Centralize model name env resolution
-const modelName =
-  process.env.MODEL_NAME_AT_ENDPOINT ||
-  process.env.NOS_MODEL_NAME_AT_ENDPOINT ||
-  "qwen3:8b";
+const modelName = process.env.MODEL_NAME_AT_ENDPOINT || process.env.NOS_MODEL_NAME_AT_ENDPOINT || "qwen3:8b"
 
-const ollama = createOllama({ baseURL: ollamaBaseURL });
-
-// Provider routing via env: groq | ollama (default: ollama)
-const MODEL_PROVIDER = (process.env.MODEL_PROVIDER || "ollama").toLowerCase();
-const GROQ_MODEL = process.env.GROQ_MODEL || "llama-3.1-8b-instant";
+const ollama = createOllama({ baseURL: ollamaBaseURL })
 
 function getModel() {
-  if (MODEL_PROVIDER === "groq" && process.env.GROQ_API_KEY) {
-    return groq(GROQ_MODEL);
+  if (process.env.GROQ_API_KEY) {
+    return groq(GROQ_MODEL)
   }
-  return ollama(modelName);
+  return ollama(modelName)
 }
 
 export const storyAgent = new Agent({
   name: "Storyteller Agent",
-  tools: {generateCharacterTool, plotTwistGeneratorTool, worldBuildingTool},
+  tools: { generateCharacterTool, plotTwistGeneratorTool, worldBuildingTool },
   model: getModel(),
   instructions: [
     // === CORE ROLE ===
@@ -159,7 +150,7 @@ export const storyAgent = new Agent({
     // === WORKING MEMORY OPERATIONS ===
     "WORKING MEMORY OPERATIONS:",
     "- When you change memory (characters, worldNotes, plotBeats, stylePreset, toneHints, branches, lastPlan, storyProgress, plotBeatsResolved, turnCount, userProfile, narrativeSettings, constraints, canonFacts, themes), CALL the action named 'updateWorkingMemory' with only the changed fields as top-level arguments.",
-    "- Do NOT wrap arguments in a 'memory' object. The args must be a flat JSON object like: { \"characters\": [\"Ari\"], \"plotBeats\": [\"...\"], \"storyProgress\": \"middle\", \"plotBeatsResolved\": 3 }.",
+    '- Do NOT wrap arguments in a \'memory\' object. The args must be a flat JSON object like: { "characters": ["Ari"], "plotBeats": ["..."], "storyProgress": "middle", "plotBeatsResolved": 3 }.',
     "- For nested objects you include, ALWAYS send all required keys with allowed values:",
     "  • narrativeSettings.pov: first | second | third.",
     "  • narrativeSettings.tense: past | present | future.",
@@ -191,7 +182,8 @@ export const storyAgent = new Agent({
     "- Use 'world-building' when expanding the story world or user asks about setting details.",
     "- Tools enhance creativity but story decisions remain yours based on context and user input.",
   ].join("\n"),
-  description: "Narrative agent with planning, branching suggestions, personalization, continuity, and structured story-state awareness.",
+  description:
+    "Narrative agent with planning, branching suggestions, personalization, continuity, and structured story-state awareness.",
   memory: new Memory({
     storage: new LibSQLStore({
       url: process.env.MASTRA_DB_URL || "file:./data/mastra.db",
@@ -201,4 +193,4 @@ export const storyAgent = new Agent({
       workingMemory: { enabled: true, schema: StoryState },
     },
   }),
-});
+})
