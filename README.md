@@ -1,3 +1,4 @@
+```markdown
 # Builders' Challenge #3: AI Agents 102
 **Presented by Nosana and Mastra**
 
@@ -163,13 +164,13 @@ nosana job post --file ./nos_job_def/nosana_mastra_job_definition.json --market 
 
 ### Frontend Interface
 ![Story Forge Interface](./public/frontend-screenshot-1.png)
-*Main chat interface for interacting with the Story Forge agent*
+*Landing page UI showcasing StoryForge’s templates, chat interface, and the “How to Use” section for guiding users through story creation*
 
 ![Character Generation](./public/frontend-screenshot-2.png)
-*Example of character generation in action*
+*Custom template selected by the user, showcasing the page used to generate stories within StoryForge*
 
 ![World Building](./public/frontend-screenshot-3.png)
-*World building tool creating immersive settings*
+*How to use page for insructions*
 
 ## 🎥 Video Demonstration
 
@@ -196,7 +197,7 @@ Follow the project and share your stories created with Story Forge! #NosanaAgent
 └────────┬────────┘
          │
          ↓
-┌────────────────��┐
+┌─────────────────┐
 │  Mastra Agent   │  ← Agent Orchestration (Port 4111)
 │   - Character   │
 │   - Plot Twist  │
@@ -227,24 +228,16 @@ Environment variables are pre-configured in the Docker image. For local developm
 
 **Note**: The Dockerfile uses `COPY .env ./` to include environment variables in the container build.
 
-## 🎯 Real-World Applications
+## 🌍 Real-World Applications
 
-Story Forge comes with 5 prebuilt templates that you can use to quickly generate tailored creative output. The available templates are:
+StoryForge’s diverse templates can be used across a range of creative and storytelling scenarios:
 
-- Whimsical
-- Horror
-- Epic Lore
-- Romantic
-- Thriller
-
-Story Forge can be used for many creative scenarios, including:
-
-- **Novel Writing** - Generate characters and plot developments for fiction
-- **Game Design** - Create NPCs, quests, and game worlds
-- **Screenwriting** - Develop characters and story arcs for scripts
-- **Tabletop RPGs** - Build campaigns, characters, and settings
-- **Creative Writing Education** - Teaching tool for story structure
-- **Content Creation** - Generate ideas for blogs, videos, and social media
+- **Whimsical** – Perfect for children’s stories, light novels, or imaginative short tales  
+- **Horror** – Ideal for crafting chilling narratives, horror games, or spooky podcast scripts  
+- **Thriller** – Great for suspense novels, mystery plots, and cinematic storytelling  
+- **Romantic** – Useful for romance fiction, character-driven dramas, and screenplay concepts  
+- **Fantasy** – Excellent for world-building, RPG campaigns, and magical adventure stories  
+- **Epic Lore** – Designed for deep lore creation, mythic storytelling, and expansive sagas  
 
 ## 🏆 Challenge Submission Checklist
 
@@ -288,3 +281,4 @@ This project is part of the Nosana Builders Challenge #3.
 **Built with ❤️ for the Nosana Builders Challenge**
 
 *Empowering writers with AI-powered creativity on decentralized infrastructure*
+```
