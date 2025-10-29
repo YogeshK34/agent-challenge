@@ -4,7 +4,6 @@ import { createOllama } from "ollama-ai-provider-v2"
 import { Agent } from "@mastra/core/agent"
 import { LibSQLStore } from "@mastra/libsql"
 import { Memory } from "@mastra/memory"
-import { groq } from "@ai-sdk/groq"
 import { generateCharacterTool, plotTwistGeneratorTool, worldBuildingTool } from "../tools"
 import { StoryState } from "./state" // ✅ Import from state.ts instead of redefining
 
@@ -38,27 +37,16 @@ function maybeNotifyMemoryUpdated(sessionId: string, memoryDelta: any) {
   // e.g., sendToClient(sessionId, { type: 'memory-updated', payload: memoryDelta });
 }
 
-const GROQ_MODEL = process.env.GROQ_MODEL || "llama-3.1-8b-instant"
+const ollama = createOllama({
+  baseURL: process.env.NOS_OLLAMA_API_URL || process.env.OLLAMA_API_URL,
+})
 
-// Prefer local OLLAMA_API_URL first; fall back to NOS_* proxy if present
-const ollamaBaseURL = process.env.OLLAMA_API_URL || process.env.NOS_OLLAMA_API_URL || process.env.OLLAMA_BASE_URL
-
-// Centralize model name env resolution
-const modelName = process.env.MODEL_NAME_AT_ENDPOINT || process.env.NOS_MODEL_NAME_AT_ENDPOINT || "qwen3:8b"
-
-const ollama = createOllama({ baseURL: ollamaBaseURL })
-
-function getModel() {
-  if (process.env.GROQ_API_KEY) {
-    return groq(GROQ_MODEL)
-  }
-  return ollama(modelName)
-}
+const modelName = process.env.NOS_MODEL_NAME_AT_ENDPOINT || process.env.MODEL_NAME_AT_ENDPOINT || "qwen3:8b"
 
 export const storyAgent = new Agent({
   name: "Storyteller Agent",
   tools: { generateCharacterTool, plotTwistGeneratorTool, worldBuildingTool },
-  model: getModel(),
+  model: ollama(modelName),
   instructions: [
     // === CORE ROLE ===
     "You are an interactive storytelling agent.",
