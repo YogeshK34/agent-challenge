@@ -11,7 +11,7 @@
 
 ## 🎯 Project Overview
 
-Story Forge is an AI-powered creative writing assistant that leverages the Mastra framework to help authors, game designers, and storytellers overcome writer's block and develop rich narratives. The agent uses three specialized tools to generate creative content on demand.
+Story Forge is an AI-powered creative writing assistant that leverages the Mastra framework to help authors, game designers, and storytellers overcome writer's block and develop rich narratives.
 
 ### Key Features
 
@@ -64,28 +64,28 @@ Story Forge is an AI-powered creative writing assistant that leverages the Mastr
 ### Installation
 
 1. **Clone the repository**
-\`\`\`bash
+```bash
 git clone https://github.com/yogeshkhutwad34/agent-challenge
 cd agent-challenge
-\`\`\`
+```
 
 2. **Install dependencies**
-\`\`\`bash
+```bash
 pnpm install
-\`\`\`
+```
 
 3. **Configure environment variables**
 
 For local development, create a `.env` file with your Ollama API and Mastra DB credentials. For production deployment, use the pre-configured Docker image which includes all necessary environment variables.
 
 4. **Run the development servers**
-\`\`\`bash
+```bash
 # Terminal 1 - Start the frontend
 pnpm run dev:ui
 
 # Terminal 2 - Start the Mastra agent server
 pnpm run dev:agent
-\`\`\`
+```
 
 5. **Access the application**
 - Frontend: http://localhost:3000
@@ -95,7 +95,7 @@ pnpm run dev:agent
 
 ### Build and Run Locally
 
-\`\`\`bash
+```bash
 # Build the Docker image
 docker build -t yogeshk34/agent-challenge:latest .
 
@@ -103,15 +103,15 @@ docker build -t yogeshk34/agent-challenge:latest .
 docker run -p 3000:3000 yogeshk34/agent-challenge:latest
 
 # Access at http://localhost:3000
-\`\`\`
+```
 
 ### Published Docker Image
 
 The production-ready container is available on Docker Hub:
 
-\`\`\`bash
+```bash
 docker pull yogeshk34/agent-challenge:latest
-\`\`\`
+```
 
 **Docker Hub**: [yogeshk34/agent-challenge](https://hub.docker.com/r/yogeshk34/agent-challenge)
 
@@ -134,10 +134,10 @@ The agent is running on Nosana's decentralized compute network with:
    - Select GPU and deploy
 
 2. **Using Nosana CLI**:
-\`\`\`bash
+```bash
 npm install -g @nosana/cli
 nosana job post --file ./nos_job_def/nosana_mastra_job_definition.json --market nvidia-3090 --timeout 30
-\`\`\`
+```
 
 ## 💡 Usage Examples
 
@@ -190,13 +190,13 @@ Follow the project and share your stories created with Story Forge! #NosanaAgent
 
 ## 🏗️ Architecture
 
-\`\`\`
+```
 ┌─────────────────┐
 │   Next.js UI    │  ← User Interface (Port 3000)
 └────────┬────────┘
          │
          ↓
-┌─────────────────┐
+┌────────────────��┐
 │  Mastra Agent   │  ← Agent Orchestration (Port 4111)
 │   - Character   │
 │   - Plot Twist  │
@@ -212,7 +212,7 @@ Follow the project and share your stories created with Story Forge! #NosanaAgent
 ┌─────────────────┐
 │  Turso DB       │  ← Agent Memory & State
 └─────────────────┘
-\`\`\`
+```
 
 ## 🔧 Environment Variables
 
@@ -229,7 +229,15 @@ Environment variables are pre-configured in the Docker image. For local developm
 
 ## 🎯 Real-World Applications
 
-Story Forge comes with **8 prebuilt templates** and can be used for:
+Story Forge comes with 5 prebuilt templates that you can use to quickly generate tailored creative output. The available templates are:
+
+- Whimsical
+- Horror
+- Epic Lore
+- Romantic
+- Thriller
+
+Story Forge can be used for many creative scenarios, including:
 
 - **Novel Writing** - Generate characters and plot developments for fiction
 - **Game Design** - Create NPCs, quests, and game worlds
